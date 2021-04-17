@@ -4,7 +4,7 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
 import os, uuid
-
+from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 app.secret_key = '\x7f\xb0D\xfd}(\x1aP\xedt\xa5r^\xda\xa7tf\x1f\xf2V\x93\xf2n\x96'
@@ -12,7 +12,7 @@ app.secret_key = '\x7f\xb0D\xfd}(\x1aP\xedt\xa5r^\xda\xa7tf\x1f\xf2V\x93\xf2n\x9
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'root'
-app.config['MYSQL_DB'] = 'lib_mang_system'
+app.config['MYSQL_DB'] = 'lms'
 
 mysql = MySQL(app)
 
@@ -125,5 +125,116 @@ def register():
             msg = 'Please fill out the form !'
 
     return render_template('register.html', msg=msg)
+
+@app.route("/remove_book/", methods=['GET', 'POST'])
+def remove_book():
+    print('1')
+    msg = ''
+    if request.method == 'POST':
+        print('2')
+        isbn = request.form['isbn']
+        count = request.form['count']
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('select shelf_Id,count from book where ISBN = %s', (isbn,))
+        a = cursor.fetchone()
+        print('3')
+        print(a)
+        cursor.execute('select capacity from shelf where shelf_Id = %s', (a['shelf_Id'],))
+        c = cursor.fetchone()
+        if int(count) <= 75-int(c['capacity']):
+                if int(c['capacity'])==0:
+                    cursor.execute('update shelf set shelf_status = %s where shelf_Id = %s',
+                                    ('available', a['shelf_Id'],))
+                cursor.execute('update shelf set capacity = %s where shelf_Id = %s', (int(c['capacity'])+int(count),a['shelf_Id'], ))
+                cursor.execute('update book set count = %s where ISBN = %s', (int(a['count']) - int(count),isbn, ))
+
+        else:
+                msg = 'Cannot remove books .'
+
+        print('hiiiiiii')
+        mysql.connection.commit()
+        cursor.close()
+
+    if 'loggedin' in session:
+        return render_template('remove_book.html', username=session['username'],msg=msg)
+    else:
+        return render_template('remove_book.html', username="",msg=msg)
+
+
+
+@app.route("/add_book/", methods=['GET', 'POST'])
+def add_book():
+    print('1')
+    msg = ''
+    if request.method == 'POST':
+        print('2')
+        title = request.form['title']
+        author = request.form['author']
+        isbn = request.form['isbn']
+        year = request.form['year']
+        count = request.form['count']
+        category = request.form['category']
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        extension = os.path.splitext(filename)
+        allowed_extensions = {'.jpg', '.png', '.jpeg'}
+        if extension[1] in allowed_extensions:
+            f_name = str(uuid.uuid4()) + str(extension[1])
+            app.config['UPLOAD_FOLDER'] = 'static/Uploads'
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], f_name))
+            cursor1 = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor1.execute('select shelf_Id,count from book where ISBN = %s', (isbn,))
+            a = cursor1.fetchone()
+            if a:
+                print('3')
+                print(a)
+                cursor1.execute('select capacity from shelf where shelf_Id = %s', (a['shelf_Id'],))
+                c = cursor1.fetchone()
+                if int(count) <= int(c['capacity']):
+                    cursor1.execute('update shelf set capacity = %s where shelf_Id = %s', (int(c['capacity'])-int(count),a['shelf_Id'], ))
+                    cursor1.execute('update book set count = %s where ISBN = %s', (int(a['count']) + int(count),isbn, ))
+                    if int(count)==int(c['capacity']):
+                        cursor1.execute('update shelf set shelf_status = %s where shelf_Id = %s',
+                                    ('no space', a['shelf_Id'],))
+                else:
+                    msg = 'Cannot add books overflow.'
+            else:
+                print('poppppiiiii')
+                cursor1.execute('select shelf_Id from shelf where capacity = %s', (75,))
+                s1 = cursor1.fetchone()
+                print(s1)
+                if int(count) <= 75:
+                    print('4')
+                    cursor1.execute('INSERT INTO book VALUES (%s, % s, % s, % s,% s,% s,% s,%s,% s)',
+                                (isbn, title, author, year, s1['shelf_Id'], count,0,category,f_name))
+                    cursor1.execute('update shelf set capacity = %s where shelf_Id = %s', (75-int(count),s1['shelf_Id'],))
+                    if int(count)==75:
+                        cursor1.execute('update shelf set shelf_status = %s where shelf_Id = %s',
+                                    ('no space', s1['shelf_Id'],))
+
+                else:
+                    msg = 'Cannot add books overflow.'
+            print('hiiiiiii')
+            mysql.connection.commit()
+            cursor1.close()
+        else:
+            msg = 'Upload image in jpg/png/jpeg format only!'
+    if 'loggedin' in session:
+        return render_template('add_book.html', username=session['username'],msg=msg)
+    else:
+        return render_template('add_book.html', username="",msg=msg)
+
+
+@app.route("/books/", methods=['GET', 'POST'])
+def books():
+    cursor1 = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor1.execute('select * from book ')
+    details = cursor1.fetchall()
+    mysql.connection.commit()
+    cursor1.close()
+    if 'loggedin' in session:
+        return render_template('books.html', username=session['username'], detail=details)
+    else:
+        return render_template('books.html', username="", detail=details)
 
 app.run(debug=True)
