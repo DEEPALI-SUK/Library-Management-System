@@ -62,7 +62,8 @@
                     >
                     <div class="dropdown-menu">
                       <a class="dropdown-item" href="#"><h5>{{username}}</h5></a>
-                      <a class="dropdown-item" href="#"><h5>{{email1}}</h5></a>
+                      <a class="dropdown-item" href="#"><h5>{{email}}</h5></a>
+                        <a class="dropdown-item" href="{{ url_for('update_profile') }}"><h5>Update Profile</h5></a>
                       <a class="dropdown-item" href="{{ url_for('logout') }}"><h5>Logout</h5></a>
                     </div>
                   </li>
@@ -72,7 +73,7 @@
                   </li>
                     {%endif%}
 
-                  {% if username=="librarian" %}
+                  {% if email!='' and email[:3]=='lib'%}
                      <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                         <a class="nav-link" href="/lib_dashboard"><h5>Dashboard</h5></a>
                      </li>
@@ -112,6 +113,12 @@
     <br>
     <br>
     <br>
+    {% if msg %}
+       <div class="alert alert-info alert-dismissible">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <strong>{{msg}}</strong>
+       </div>
+    {%endif%}
     <h1>Sports</h1>
    <div class="container-fluid" id="s">
     <div class="slider owl-carousel">
@@ -126,13 +133,15 @@
                 <div class="sub-title">
                 By: {{u['author']}}</div>
                 <p>Publication Year: {{u['year_of_publication']}}</p>
+                    {% if email!='' and email[:3]!='lib'%}
                 <div class="btn">
                 {% if u['borrow_count']==u['count'] %}
                             <button>On Hold</button>
                 {% else %}
-                            <button>Borrow</button>
+                            <a href="{{url_for('borrow_book',id=u['ISBN'])}}"><button>Borrow</button></a>
                 {%endif%}
                 </div>
+                    {%endif%}
                 </div>
                 </div>
             {%endif%}
@@ -155,13 +164,15 @@
                 <div class="sub-title">
                 By: {{u['author']}}</div>
                 <p>Publication Year: {{u['year_of_publication']}}</p>
+                    {% if email!='' and email[:3]!='lib'%}
                 <div class="btn">
                 {% if u['borrow_count']==u['count'] %}
                             <button>On Hold</button>
                 {% else %}
-                            <button>Borrow</button>
+                            <a href="{{url_for('borrow_book',id=u['ISBN'])}}"><button>Borrow</button></a>
                 {%endif%}
                 </div>
+                    {%endif%}
                 </div>
                 </div>
             {%endif%}
@@ -184,13 +195,15 @@
                 <div class="sub-title">
                 By: {{u['author']}}</div>
                 <p>Publication Year: {{u['year_of_publication']}}</p>
+                    {% if email!='' and email[:3]!='lib'%}
                 <div class="btn">
                 {% if u['borrow_count']==u['count'] %}
                             <button>On Hold</button>
                 {% else %}
-                            <button>Borrow</button>
+                            <a href="{{url_for('borrow_book',id=u['ISBN'])}}"><button>Borrow</button></a>
                 {%endif%}
                 </div>
+                    {%endif%}
                 </div>
                 </div>
             {%endif%}
@@ -213,13 +226,15 @@
                 <div class="sub-title">
                 By: {{u['author']}}</div>
                 <p>Publication Year: {{u['year_of_publication']}}</p>
+                    {% if email!='' and email[:3]!='lib'%}
                 <div class="btn">
                 {% if u['borrow_count']==u['count'] %}
                             <button>On Hold</button>
                 {% else %}
-                            <button>Borrow</button>
+                            <a href="{{url_for('borrow_book',id=u['ISBN'])}}"><button>Borrow</button></a>
                 {%endif%}
                 </div>
+                    {%endif%}
                 </div>
                 </div>
             {%endif%}

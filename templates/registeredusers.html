@@ -59,7 +59,8 @@
                     >
                      <div class="dropdown-menu">
                       <a class="dropdown-item"><h5>{{username}}</h5></a>
-                      <a class="dropdown-item"><h5>{{email1}}</h5></a>
+                      <a class="dropdown-item"><h5>{{email}}</h5></a>
+                         <a class="dropdown-item" href="{{ url_for('update_profile') }}"><h5>Update Profile</h5></a>
                       <a class="dropdown-item" href="{{ url_for('logout') }}"><h5>Logout</h5></a>
                     </div>
                   </li>
@@ -69,7 +70,7 @@
                   </li>
                   {%endif%}
 
-                  {% if username=="librarian" %}
+                  {% if email!='' and email[:3]=='lib'%}
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                         <a class="nav-link" href="/lib_dashboard"><h5>Dashboard</h5></a>
                      </li>
@@ -117,7 +118,7 @@
     <div class = "container" >
          <div class="table-responsive">
                 <table class="table table-hover">
-                  {%if username =="librarian" %}
+                  {% if email!='' and email[:3]=='lib'%}
                     <thead>
                     <tr>
                       <th scope="col">U_ID</th>

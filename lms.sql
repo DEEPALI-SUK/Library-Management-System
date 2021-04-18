@@ -41,6 +41,23 @@ foreign key(shelf_Id) references shelf(shelf_Id) on delete cascade on update
 cascade
 );
 
+CREATE TABLE borrow(
+     M_Id int not null,
+     ISBN int not null,
+     primary key(M_Id, ISBN),
+     foreign key(M_Id) references lib_member(M_Id) on delete cascade on update cascade,
+     foreign key(ISBN) references book(ISBN) on delete cascade on update cascade
+);
+CREATE TABLE book_status(
+     M_Id int not null,
+     ISBN int not null,
+     start_date date not null,
+     due_date date not null,
+     primary key(M_Id, ISBN),
+     foreign key(M_Id) references lib_member(M_Id) on delete cascade on update cascade,
+     foreign key(ISBN) references book(ISBN) on delete cascade on update cascade
+);
+
 CREATE TABLE follower_following(
 M_Id1 int not null,
 M_Id2 int not null,
