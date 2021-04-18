@@ -41,6 +41,16 @@ foreign key(shelf_Id) references shelf(shelf_Id) on delete cascade on update
 cascade
 );
 
+CREATE TABLE follower_following(
+M_Id1 int not null,
+M_Id2 int not null,
+primary key(M_Id1,M_Id2),
+foreign key(M_Id1) references lib_member(M_Id) on delete
+cascade on
+update cascade,
+foreign key(M_Id2) references lib_member(M_Id) on delete cascade on
+update cascade
+);
 
 
 INSERT INTO shelf (shelf_Id, capacity, shelf_status) VALUES (1, 75, 'empty');

@@ -119,17 +119,22 @@
 
     <div class="container">
       <div class="row py-5 mt-4 align-items-center">
-        <!-- For Demo Purpose -->
+
         <div class="col-md-5 pr-lg-5 mb-5 mb-md-0">
           <img src="{{url_for('static', filename='./images/i1.png')}}" alt="" class="img-fluid mb-3 d-none d-md-block" />
           <h1>Adding Book</h1>
         </div>
 
-        <!-- Registeration Form -->
         <div class="col-md-7 col-lg-6 ml-auto">
+            {% if msg %}
+              <div class="alert alert-info alert-dismissible">
+                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                 <strong>{{msg}}</strong>
+              </div>
+            {%endif%}
           <form action="{{ url_for('add_book') }}" method="post" enctype="multipart/form-data">
             <div class="row">
-              <div class="msg">{{ msg }}</div>
+
               <!-- Title -->
               <div class="input-group col-lg-6 mb-4">
                 <div class="input-group-prepend">

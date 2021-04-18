@@ -149,13 +149,20 @@
                   </thead>
                     <tbody>
                   {% for user in userDetails %}
-                  <tr>
-                  <td> {{user[2]}} </td>
-                  <td>
-                      <button type="button" class="btn btn-primary btn-rounded btn-sm m-0">Follow</button>
-                  </td>
-                  </tr>
+                    {% if user[0]!=session['id'] %}
+                        <tr>
+                        <td> {{user[2]}} </td>
+                        <td>
+                            {% if user[0] in l %}
 
+                            <a href="{{url_for('unfollow',id=user[0])}}"><button type="button" class="btn btn-primary btn-rounded btn-sm m-0">Unfollow</button></a>
+                            {% else %}
+
+                            <a href="{{url_for('follow',id=user[0])}}"><button type="button" class="btn btn-primary btn-rounded btn-sm m-0">Follow</button></a>
+                            {% endif %}
+                        </td>
+                        </tr>
+                    {% endif %}
                   {% endfor %}
 
                 {%endif%}
