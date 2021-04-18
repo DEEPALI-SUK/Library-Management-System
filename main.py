@@ -19,7 +19,7 @@ mysql = MySQL(app)
 @app.route("/", methods=['GET', 'POST'])
 def home():
     if 'loggedin' in session:
-        return render_template('index.html', username=session['username'])
+        return render_template('index.html', username=session['username'], email1=session['email1'])
     else:
         return render_template('index.html', username="")
 
@@ -42,7 +42,7 @@ def login():
                     session['username'] = account['lib_name']
                     session['email1'] = account['email']
                     session['address'] = account['address']
-                    return redirect(url_for('home'))
+                    return redirect(url_for('lib_dashboard'))
                 else:
                   msg = 'Incorrect email/password!'
             else:
@@ -57,7 +57,7 @@ def login():
                     session['username'] = account['member_name']
                     session['email1'] = account['email']
                     session['address'] = account['address']
-                    return redirect(url_for('home'))
+                    return redirect(url_for('registeredusers'))
                 else:
                   msg = 'Incorrect email/password!'
         else:
@@ -126,6 +126,14 @@ def register():
 
     return render_template('register.html', msg=msg)
 
+
+@app.route("/lib_dashboard/")
+def lib_dashboard():
+    if 'loggedin' in session:
+        return render_template('lib_dashboard.html', username='librarian', email1=session['email1'])
+    return redirect(url_for('login'))
+
+
 @app.route("/remove_book/", methods=['GET', 'POST'])
 def remove_book():
     print('1')
@@ -141,10 +149,11 @@ def remove_book():
         print(a)
         cursor.execute('select capacity from shelf where shelf_Id = %s', (a['shelf_Id'],))
         c = cursor.fetchone()
-        if int(count) <= 75-int(c['capacity']):
-                if int(c['capacity'])==0:
+        if int(count) <= int(a['count']):
+                if int(a['count']-int(count))==0:
                     cursor.execute('update shelf set shelf_status = %s where shelf_Id = %s',
                                     ('available', a['shelf_Id'],))
+                    cursor.execute('delete from book where ISBN = %s', (isbn), )
                 cursor.execute('update shelf set capacity = %s where shelf_Id = %s', (int(c['capacity'])+int(count),a['shelf_Id'], ))
                 cursor.execute('update book set count = %s where ISBN = %s', (int(a['count']) - int(count),isbn, ))
 
@@ -156,9 +165,32 @@ def remove_book():
         cursor.close()
 
     if 'loggedin' in session:
-        return render_template('remove_book.html', username=session['username'],msg=msg)
+        email = session['email1']
+        if email[:3] == 'lib':
+            return render_template('remove_book.html', username=session['username'], msg=msg)
+        else:
+            return redirect(url_for('login'))
     else:
-        return render_template('remove_book.html', username="",msg=msg)
+        return redirect(url_for('login'))
+
+
+@app.route("/registeredusers/")
+def registeredusers():
+    if 'loggedin' in session:
+        cur = mysql.connection.cursor()
+        resultValue = cur.execute("SELECT * FROM lib_member")
+        if resultValue > 0:
+            userDetails = cur.fetchall()
+            cur.execute('select M_Id2 from follower_following where M_Id1= %s',([session['id']],))
+            list=cur.fetchall()
+            l=[]
+            for i in list:
+                l.append(i[0])
+
+            mysql.connection.commit()
+            cur.close()
+            return render_template('registeredusers.html', userDetails=userDetails, l =l, username=session['username'],
+                                   email1=session['email1'])
 
 
 
@@ -190,10 +222,10 @@ def add_book():
                 print(a)
                 cursor1.execute('select capacity from shelf where shelf_Id = %s', (a['shelf_Id'],))
                 c = cursor1.fetchone()
-                if int(count) <= int(c['capacity']):
+                if int(count) <= 75-int(a['count']):
                     cursor1.execute('update shelf set capacity = %s where shelf_Id = %s', (int(c['capacity'])-int(count),a['shelf_Id'], ))
                     cursor1.execute('update book set count = %s where ISBN = %s', (int(a['count']) + int(count),isbn, ))
-                    if int(count)==int(c['capacity']):
+                    if int(count)==75-int(a['count']):
                         cursor1.execute('update shelf set shelf_status = %s where shelf_Id = %s',
                                     ('no space', a['shelf_Id'],))
                 else:
@@ -220,9 +252,13 @@ def add_book():
         else:
             msg = 'Upload image in jpg/png/jpeg format only!'
     if 'loggedin' in session:
-        return render_template('add_book.html', username=session['username'],msg=msg)
+        email = session['email1']
+        if email[:3] == 'lib':
+            return render_template('add_book.html', username=session['username'], msg=msg)
+        else:
+            return redirect(url_for('login'))
     else:
-        return render_template('add_book.html', username="",msg=msg)
+        return redirect(url_for('login'))
 
 
 @app.route("/books/", methods=['GET', 'POST'])
@@ -233,8 +269,32 @@ def books():
     mysql.connection.commit()
     cursor1.close()
     if 'loggedin' in session:
-        return render_template('books.html', username=session['username'], detail=details)
+        return render_template('books.html', username=session['username'], email1=session['email1'], detail=details)
     else:
         return render_template('books.html', username="", detail=details)
+
+@app.route('/follow/<string:id>', methods=['GET', 'POST'])
+def follow(id):
+    if 'loggedin' in session:
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        print(id)
+        cur.execute('insert into follower_following values (%s, %s)', (session['id'], id))
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('registeredusers'))
+    else:
+        return render_template('login.html', username="")
+
+@app.route('/unfollow/<string:id>', methods=['GET', 'POST'])
+def unfollow(id):
+    if 'loggedin' in session:
+        cur = mysql.connection.cursor()
+        cur.execute('delete from follower_following where M_Id2= %s', ( id))
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('registeredusers'))
+
+    else:
+        return render_template('login.html', username="")
 
 app.run(debug=True)

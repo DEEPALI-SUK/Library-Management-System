@@ -8,6 +8,7 @@ address varchar(100) not null,
 email varchar(100) unique not null,
 primary key(L_Id)
 );
+
 CREATE TABLE lib_member(
 M_Id int unique not null auto_increment,
 member_password varchar(100) not null,
@@ -40,6 +41,16 @@ foreign key(shelf_Id) references shelf(shelf_Id) on delete cascade on update
 cascade
 );
 
+CREATE TABLE follower_following(
+M_Id1 int not null,
+M_Id2 int not null,
+primary key(M_Id1,M_Id2),
+foreign key(M_Id1) references lib_member(M_Id) on delete
+cascade on
+update cascade,
+foreign key(M_Id2) references lib_member(M_Id) on delete cascade on
+update cascade
+);
 
 
 INSERT INTO shelf (shelf_Id, capacity, shelf_status) VALUES (1, 75, 'empty');
@@ -57,3 +68,9 @@ INSERT INTO shelf (shelf_Id, capacity, shelf_status) VALUES (12, 75, 'empty');
 
 select * from book;
 select * from shelf ;
+
+--  use 12345 as password for admin
+
+INSERT INTO librarian(L_Id, lib_name, lib_password, address, email) VALUES ('1', 'librarian', '$2b$12$7S/vNSsyeXeegQOoJO3rYuW3Rk8LnFnqBCCIPG.GJby2vp0pg6pJS', 'Indore', 'library@gmail.com');
+
+select * from  librarian;
