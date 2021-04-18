@@ -19,7 +19,7 @@ mysql = MySQL(app)
 @app.route("/", methods=['GET', 'POST'])
 def home():
     if 'loggedin' in session:
-        return render_template('index.html', username=session['username'])
+        return render_template('index.html', username=session['username'], email1=session['email1'])
     else:
         return render_template('index.html', username="")
 
@@ -42,7 +42,7 @@ def login():
                     session['username'] = account['lib_name']
                     session['email1'] = account['email']
                     session['address'] = account['address']
-                    return redirect(url_for('home'))
+                    return redirect(url_for('lib_dashboard'))
                 else:
                   msg = 'Incorrect email/password!'
             else:
@@ -57,7 +57,7 @@ def login():
                     session['username'] = account['member_name']
                     session['email1'] = account['email']
                     session['address'] = account['address']
-                    return redirect(url_for('home'))
+                    return redirect(url_for('registeredusers'))
                 else:
                   msg = 'Incorrect email/password!'
         else:
@@ -126,6 +126,14 @@ def register():
 
     return render_template('register.html', msg=msg)
 
+
+@app.route("/lib_dashboard/")
+def lib_dashboard():
+    if 'loggedin' in session:
+        return render_template('lib_dashboard.html', username='librarian', email1=session['email1'])
+    return redirect(url_for('login'))
+
+
 @app.route("/remove_book/", methods=['GET', 'POST'])
 def remove_book():
     print('1')
@@ -159,6 +167,17 @@ def remove_book():
         return render_template('remove_book.html', username=session['username'],msg=msg)
     else:
         return render_template('remove_book.html', username="",msg=msg)
+
+
+@app.route("/registeredusers/")
+def registeredusers():
+    if 'loggedin' in session:
+        cur = mysql.connection.cursor()
+        resultValue = cur.execute("SELECT * FROM lib_member")
+        if resultValue > 0:
+            userDetails = cur.fetchall()
+            return render_template('registeredusers.html', userDetails=userDetails, username=session['username'],
+                                   email1=session['email1'])
 
 
 
@@ -233,7 +252,7 @@ def books():
     mysql.connection.commit()
     cursor1.close()
     if 'loggedin' in session:
-        return render_template('books.html', username=session['username'], detail=details)
+        return render_template('books.html', username=session['username'], email1=session['email1'], detail=details)
     else:
         return render_template('books.html', username="", detail=details)
 
