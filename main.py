@@ -5,6 +5,8 @@ import MySQLdb.cursors
 import re
 import os, uuid
 from werkzeug.utils import secure_filename
+from datetime import date, timedelta
+
 app = Flask(__name__)
 
 app.secret_key = '\x7f\xb0D\xfd}(\x1aP\xedt\xa5r^\xda\xa7tf\x1f\xf2V\x93\xf2n\x96'
@@ -19,9 +21,82 @@ mysql = MySQL(app)
 @app.route("/", methods=['GET', 'POST'])
 def home():
     if 'loggedin' in session:
-        return render_template('index.html', username=session['username'], email1=session['email1'])
+        return render_template('index.html', username=session['username'], email=session['email1'])
     else:
-        return render_template('index.html', username="")
+        return render_template('index.html', username="", email="")
+
+@app.route("/update_profile/", methods=['GET', 'POST'])
+def update_profile():
+    msg = ''
+    if 'loggedin' in session:
+        if request.method == 'POST':
+            name = request.form['name']
+            password = request.form['password']
+            email = request.form['email']
+            address = request.form['address']
+            cpassword = request.form['cpassword']
+            if len(name) > 0 and len(password) > 0 and len(email) > 0 and len(address) > 0 and len(cpassword) > 0:
+                if (email[:3] == 'lib' and email[-11:] == "@iiti.ac.in"):
+                    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                    cursor.execute('SELECT * FROM librarian WHERE email = % s', (email,))
+                    account = cursor.fetchone()
+                    if account and account['email']!=session['email1']:
+                        msg = 'Account already exists with this email!'
+                    elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+                        msg = 'Invalid email address !'
+                    elif not name or not password or not email or not address or not cpassword or not address:
+                        msg = 'Please fill out the form !'
+                    elif cpassword != password:
+                        msg = 'Confirm password does not match with password !'
+                    else:
+                        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+                        cursor.execute('update librarian set lib_password=%s where L_Id=%s',(hashed,[session['id'], ]))
+                        if session['email1']!=email:
+                            session['email1']=email
+                            cursor.execute('update librarian set email=%s where L_Id=%s',(email,[session['id'], ]))
+                        if session['username']!=name:
+                            session['username']=name
+                            cursor.execute('update librarian set lib_name=%s where L_Id=%s', (name,[session['id'], ]))
+                        if session['address']!=address:
+                            session['address']=address
+                            cursor.execute('update librarian set address=%s where L_Id=%s', (address,[session['id'], ]))
+                        mysql.connection.commit()
+                        cursor.close()
+                        msg = 'Your profile has been successfully updated !'
+                elif (email[-11:] == "@iiti.ac.in"):
+                    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                    cursor.execute('SELECT * FROM lib_member WHERE email = % s', (email,))
+                    account = cursor.fetchone()
+                    if account and account['email']!=session['email1']:
+                        msg = 'Account already exists with this email!'
+                    elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+                        msg = 'Invalid email address !'
+                    elif not name or not password or not email or not address or not cpassword or not address:
+                        msg = 'Please fill out the form !'
+                    elif cpassword != password:
+                        msg = 'Confirm password does not match with password !'
+                    else:
+                        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+                        cursor.execute('update lib_member set member_password=%s where M_Id=%s', (hashed,[session['id'], ]))
+                        if session['email1'] != email:
+                            session['email1'] = email
+                            cursor.execute('update lib_member set email=%s where M_Id=%s', (email,[session['id'], ]))
+                        if session['username'] != name:
+                            session['username'] = name
+                            cursor.execute('update lib_member set member_name=%s where M_Id=%s', (name,[session['id'], ]))
+                        if session['address'] != address:
+                            session['address'] = address
+                            cursor.execute('update lib_member set address=%s where M_Id=%s', (address,[session['id'], ]))
+                        mysql.connection.commit()
+                        cursor.close()
+                        msg = 'Your profile has been successfully updated !'
+                else:
+                    msg = 'Invalid email address, not a member of institute !'
+            else:
+                msg = 'Please fill out the form !'
+        return render_template('update_profile.html', username=session['username'],msg=msg,email=session['email1'],address=session['address'])
+    else:
+        return redirect(url_for('login'))
 
 @app.route("/login/", methods=['GET', 'POST'])
 def login():
@@ -83,7 +158,7 @@ def register():
         address = request.form['address']
         cpassword = request.form['cpassword']
         if len(name) > 0 and len(password) > 0 and len(email) > 0 and len(address) > 0 and len(cpassword) > 0:
-            if (email[:3] == 'lib'):
+            if (email[:3] == 'lib' and email[-11:]=="@iiti.ac.in"):
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
                 cursor.execute('SELECT * FROM librarian WHERE email = % s', (email,))
                 account = cursor.fetchone()
@@ -102,7 +177,7 @@ def register():
                     mysql.connection.commit()
                     cursor.close()
                     msg = 'You have successfully registered !'
-            else:
+            elif (email[-11:]=="@iiti.ac.in"):
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
                 cursor.execute('SELECT * FROM lib_member WHERE email = % s', (email,))
                 account = cursor.fetchone()
@@ -121,6 +196,8 @@ def register():
                     mysql.connection.commit()
                     cursor.close()
                     msg = 'You have successfully registered !'
+            else:
+                msg = 'Invalid email address, not a member of institute !'
         else:
             msg = 'Please fill out the form !'
 
@@ -130,7 +207,7 @@ def register():
 @app.route("/lib_dashboard/")
 def lib_dashboard():
     if 'loggedin' in session:
-        return render_template('lib_dashboard.html', username='librarian', email1=session['email1'])
+        return render_template('lib_dashboard.html', username='librarian', email=session['email1'])
     return redirect(url_for('login'))
 
 
@@ -167,7 +244,7 @@ def remove_book():
     if 'loggedin' in session:
         email = session['email1']
         if email[:3] == 'lib':
-            return render_template('remove_book.html', username=session['username'], msg=msg)
+            return render_template('remove_book.html', username=session['username'], msg=msg, email=session['email1'])
         else:
             return redirect(url_for('login'))
     else:
@@ -190,7 +267,7 @@ def registeredusers():
             mysql.connection.commit()
             cur.close()
             return render_template('registeredusers.html', userDetails=userDetails, l =l, username=session['username'],
-                                   email1=session['email1'])
+                                   email=session['email1'])
 
 
 
@@ -254,7 +331,7 @@ def add_book():
     if 'loggedin' in session:
         email = session['email1']
         if email[:3] == 'lib':
-            return render_template('add_book.html', username=session['username'], msg=msg)
+            return render_template('add_book.html', username=session['username'], msg=msg, email=session['email1'])
         else:
             return redirect(url_for('login'))
     else:
@@ -263,15 +340,17 @@ def add_book():
 
 @app.route("/books/", methods=['GET', 'POST'])
 def books():
+    msg = ''
     cursor1 = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor1.execute('select * from book ')
     details = cursor1.fetchall()
     mysql.connection.commit()
     cursor1.close()
     if 'loggedin' in session:
-        return render_template('books.html', username=session['username'], email1=session['email1'], detail=details)
+        return render_template('books.html', username=session['username'], msg=msg, detail=details,
+                               email=session['email1'])
     else:
-        return render_template('books.html', username="", detail=details)
+        return render_template('books.html', username="", msg=msg, detail=details, email="")
 
 @app.route('/follow/<string:id>', methods=['GET', 'POST'])
 def follow(id):
@@ -283,7 +362,7 @@ def follow(id):
         cur.close()
         return redirect(url_for('registeredusers'))
     else:
-        return render_template('login.html', username="")
+        return redirect(url_for('login'))
 
 @app.route('/unfollow/<string:id>', methods=['GET', 'POST'])
 def unfollow(id):
@@ -295,6 +374,54 @@ def unfollow(id):
         return redirect(url_for('registeredusers'))
 
     else:
-        return render_template('login.html', username="")
+        return redirect(url_for('login'))
+
+@app.route('/borrow_book/<string:id>', methods=['GET', 'POST'])
+def borrow_book(id):
+    msg=''
+    if 'loggedin' in session:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('select count(*) from borrow where M_Id=%s',[session['id'], ])
+        c=cursor.fetchone()
+        email=session['email1']
+        if(email[:3]!='lib'):
+            if (email[:7]!='faculty'):
+              if(c['count(*)']>=3):
+                msg='Oops!! you have already issued 3 books. You cannot issue more than 10 books.'
+              else:
+                cursor.execute('select * from borrow where M_Id=%s and ISBN=%s',([session['id'], ],[id, ]))
+                flag=cursor.fetchone()
+                if flag:
+                    msg='Oops!! you can issue a particular book only one time until you return the same!'
+                else:
+                    cursor.execute('insert into borrow values (%s,%s)',(session['id'],id))
+                    start_date=date.today()
+                    end_date= start_date+timedelta(15)
+                    cursor.execute('insert into book_status values (%s,%s,%s,%s)',(session['id'],id,start_date,end_date))
+                    cursor.execute('update book set borrow_count =borrow_count+1 where ISBN=%s',[id, ])
+                    cursor.execute('update shelf set capacity =capacity+1 where shelf_Id=(select shelf_Id from book where ISBN=%s)', [id, ])
+                    msg='Book got issued succesfully! :)'
+            else:
+             cursor.execute('select * from borrow where M_Id=%s and ISBN=%s', ([session['id'], ], [id, ]))
+             flag = cursor.fetchone()
+             if flag:
+                msg = 'Oops!! you can issue a particular book only one time until you return the same!'
+             else:
+                cursor.execute('INSERT INTO borrow values (%s,%s)', (session['id'], id))
+                start_date = date.today()
+                end_date = start_date + timedelta(15)
+                cursor.execute('insert into book_status values (%s,%s,%s,%s)',
+                               (session['id'], id, start_date, end_date))
+                cursor.execute('update book set borrow_count =borrow_count+1 where ISBN=%s', [id, ])
+                cursor.execute(
+                    'update shelf set capacity =capacity+1 where shelf_Id=(select shelf_Id from book where ISBN=%s)',
+                    [id, ])
+                msg = 'Book got issued succesfully! :)'
+        cursor.execute('select * from book ')
+        details = cursor.fetchall()
+        mysql.connection.commit()
+        return render_template('books.html', username=session['username'],msg=msg,detail=details,email=email)
+    else:
+        return redirect(url_for('login'))
 
 app.run(debug=True)
