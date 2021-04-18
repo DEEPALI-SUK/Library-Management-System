@@ -57,12 +57,14 @@
                       ><h5>Profile</h5></a
                     >
                     <div class="dropdown-menu">
-                      <a class="dropdown-item" href="#"><h5>SignUp</h5></a>
-                      <a class="dropdown-item" href="#"><h5>Another action</h5></a>
-                      <a class="dropdown-item" href="#"><h5>Something else here</h5></a>
+                      <a class="dropdown-item"><h5>{{username}}</h5></a>
+                      <a class="dropdown-item"><h5>{{email1}}</h5></a>
                       <a class="dropdown-item" href="{{ url_for('logout') }}"><h5>Logout</h5></a>
                     </div>
                   </li>
+                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                       <a class="nav-link" href="/registeredusers"><h5>Members List</h5></a>
+                   </li>
                     {%else%}
                   <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                     <a class="nav-link" href="/login"><h5>Login/SignUp</h5></a>
@@ -71,29 +73,12 @@
                   <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                     <a class="nav-link" href="/books"><h5>Books</h5></a>
                   </li>
-                  <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                    <a
-                      class="nav-link dropdown-toggle"
-                      data-toggle="dropdown"
-                      href="#"
-                      role="button"
-                      aria-haspopup="true"
-                      aria-expanded="false"
-                      ><h5>Services</h5></a
-                    >
-                    <div class="dropdown-menu">
-                      <a class="dropdown-item" href="#"><h5>Action</h5></a>
-                      <a class="dropdown-item" href="#"><h5>Another action</h5></a>
-                      <a class="dropdown-item" href="#"><h5>Something else here</h5></a>
-                      <a class="dropdown-item" href="#"><h5>Another action</h5></a>
-                    </div>
-                  </li>
-                  <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                    <a class="nav-link" href="#"><h5>Journal</h5></a>
-                  </li>
-                  <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                    <a class="nav-link" href="#footer"><h5>Contact</h5></a>
-                  </li>
+                  {% if username=="librarian" %}
+                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                        <a class="nav-link" href="/lib_dashboard"><h5>Dashboard</h5></a>
+                     </li>
+                  {%endif%}
+
                 </ul>
               </div>
             </nav>

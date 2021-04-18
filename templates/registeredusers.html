@@ -1,7 +1,8 @@
 <!DOCTYPE html>
+
 <html>
   <head>
-    <title>LMS</title>
+    <title>lms</title>
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -16,12 +17,8 @@
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-
     <link rel="stylesheet" href="{{url_for('static', filename='./css/style.css')}}" />
-
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
-
+    <link rel="stylesheet" href="{{url_for('static',filename='./css/add_book.css')}}" />
   </head>
   <body>
     <div class="navigation-wrap bg-light start-header start-style">
@@ -60,20 +57,20 @@
                       aria-expanded="false"
                       ><h5>Profile</h5></a
                     >
-                    <div class="dropdown-menu">
-                      <a class="dropdown-item" href="#"><h5>{{username}}</h5></a>
-                      <a class="dropdown-item" href="#"><h5>{{email1}}</h5></a>
+                     <div class="dropdown-menu">
+                      <a class="dropdown-item"><h5>{{username}}</h5></a>
+                      <a class="dropdown-item"><h5>{{email1}}</h5></a>
                       <a class="dropdown-item" href="{{ url_for('logout') }}"><h5>Logout</h5></a>
                     </div>
                   </li>
-                    {%else%}
+                  {%else%}
                   <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                     <a class="nav-link" href="/login"><h5>Login/SignUp</h5></a>
                   </li>
-                    {%endif%}
+                  {%endif%}
 
                   {% if username=="librarian" %}
-                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                         <a class="nav-link" href="/lib_dashboard"><h5>Dashboard</h5></a>
                      </li>
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
@@ -98,6 +95,10 @@
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                         <a class="nav-link" href="#"><h5>Manage Fines</h5></a>
                      </li>
+                    {%else%}
+                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                        <a class="nav-link" href="/books"><h5>Books</h5></a>
+                     </li>
                     {%endif%}
 
                 </ul>
@@ -112,122 +113,57 @@
     <br>
     <br>
     <br>
-    <h1>Sports</h1>
-   <div class="container-fluid" id="s">
-    <div class="slider owl-carousel">
-        {% for u in detail %}
-            {% if u.category.lower()=='sports' %}
-                <div class="card">
-                <div class="img">
-                <img src="{{url_for('static', filename='./Uploads/'+u.image)}}" alt=""></div>
-                <div class="content">
-                <div class="title">
-                {{u['title']}}</div>
-                <div class="sub-title">
-                By: {{u['author']}}</div>
-                <p>Publication Year: {{u['year_of_publication']}}</p>
-                <div class="btn">
-                {% if u['borrow_count']==u['count'] %}
-                            <button>On Hold</button>
-                {% else %}
-                            <button>Borrow</button>
-                {%endif%}
-                </div>
-                </div>
-                </div>
-            {%endif%}
-        {%endfor%}
-    </div>
-   </div>
 
-    <hr class="dotted">
-    <h1>History</h1>
-   <div class="container-fluid" id="s">
-    <div class="slider owl-carousel">
-        {% for u in detail %}
-            {% if u.category.lower()=='history' %}
-                <div class="card">
-                <div class="img">
-                <img src="{{url_for('static', filename='./Uploads/'+u.image)}}" alt=""></div>
-                <div class="content">
-                <div class="title">
-                {{u['title']}}</div>
-                <div class="sub-title">
-                By: {{u['author']}}</div>
-                <p>Publication Year: {{u['year_of_publication']}}</p>
-                <div class="btn">
-                {% if u['borrow_count']==u['count'] %}
-                            <button>On Hold</button>
-                {% else %}
-                            <button>Borrow</button>
-                {%endif%}
-                </div>
-                </div>
-                </div>
-            {%endif%}
-        {%endfor%}
-    </div>
-   </div>
+    <div class = "container" >
+         <div class="table-responsive">
+                <table class="table table-hover">
+                  {%if username =="librarian" %}
+                    <thead>
+                    <tr>
+                      <th scope="col">U_ID</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Address</th>
+                      <th scope="col">Unpaid Fines</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for user in userDetails %}
+                  <tr>
+                  <td> {{user[0]}} </td>
+                  <td> {{user[2]}} </td>
+                  <td> {{user[5]}} </td>
+                  <td> {{user[3]}} </td>
+                  <td> {{user[4]}} </td>
+                  </tr>
 
-    <hr class="dotted">
-    <h1>Novels</h1>
-    <div class="container-fluid" id="s">
-    <div class="slider owl-carousel">
-        {% for u in detail %}
-            {% if u.category.lower()=='novels' %}
-                <div class="card">
-                <div class="img">
-                <img src="{{url_for('static', filename='./Uploads/'+u.image)}}" alt=""></div>
-                <div class="content">
-                <div class="title">
-                {{u['title']}}</div>
-                <div class="sub-title">
-                By: {{u['author']}}</div>
-                <p>Publication Year: {{u['year_of_publication']}}</p>
-                <div class="btn">
-                {% if u['borrow_count']==u['count'] %}
-                            <button>On Hold</button>
-                {% else %}
-                            <button>Borrow</button>
-                {%endif%}
-                </div>
-                </div>
-                </div>
-            {%endif%}
-        {%endfor%}
-    </div>
-   </div>
+                  {% endfor %}
 
-    <hr class="dotted">
-    <h1>Science</h1>
-    <div class="container-fluid" id="s">
-    <div class="slider owl-carousel">
-        {% for u in detail %}
-            {% if u.category.lower()=='science' %}
-                <div class="card">
-                <div class="img">
-                <img src="{{url_for('static', filename='./Uploads/'+u.image)}}" alt=""></div>
-                <div class="content">
-                <div class="title">
-                {{u['title']}}</div>
-                <div class="sub-title">
-                By: {{u['author']}}</div>
-                <p>Publication Year: {{u['year_of_publication']}}</p>
-                <div class="btn">
-                {% if u['borrow_count']==u['count'] %}
-                            <button>On Hold</button>
-                {% else %}
-                            <button>Borrow</button>
-                {%endif%}
-                </div>
-                </div>
-                </div>
-            {%endif%}
-        {%endfor%}
-    </div>
-   </div>
+                  </tbody>
+                {%else%}
+                 <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Follower/Following</th>
+                    </tr>
+                  </thead>
+                    <tbody>
+                  {% for user in userDetails %}
+                  <tr>
+                  <td> {{user[2]}} </td>
+                  <td>
+                      <button type="button" class="btn btn-primary btn-rounded btn-sm m-0">Follow</button>
+                  </td>
+                  </tr>
 
-    <!--footer-->
+                  {% endfor %}
+
+                {%endif%}
+                </table>
+            </div>
+    </div>
+
+  <!--footer-->
     <footer class="footer" id="footer">
     <div class="container">
         <div class="row">
@@ -278,23 +214,25 @@
             </div>
         </div>
     </div>
-</footer>
-    <script src="{{url_for('static', filename='./js/script.js')}}"></script>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="{{url_for('static', filename='./js/script.js')}}"></script>
+    <script src="{{url_for('static', filename='./js/login.js')}}"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-    <script>
-      $(".slider").owlCarousel({
-        loop: true,
-        autoplay: true,
-        autoplayTimeout: 2000, //2000ms = 2s;
-        autoplayHoverPause: true,
-      });
-    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

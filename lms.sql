@@ -8,6 +8,7 @@ address varchar(100) not null,
 email varchar(100) unique not null,
 primary key(L_Id)
 );
+
 CREATE TABLE lib_member(
 M_Id int unique not null auto_increment,
 member_password varchar(100) not null,
@@ -57,3 +58,9 @@ INSERT INTO shelf (shelf_Id, capacity, shelf_status) VALUES (12, 75, 'empty');
 
 select * from book;
 select * from shelf ;
+
+--  use 12345 as password for admin
+
+INSERT INTO librarian(L_Id, lib_name, lib_password, address, email) VALUES ('1', 'librarian', '$2b$12$7S/vNSsyeXeegQOoJO3rYuW3Rk8LnFnqBCCIPG.GJby2vp0pg6pJS', 'Indore', 'library@gmail.com');
+
+select * from  librarian;
