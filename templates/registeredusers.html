@@ -75,31 +75,20 @@
                         <a class="nav-link" href="/lib_dashboard"><h5>Dashboard</h5></a>
                      </li>
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                    <a
-                      class="nav-link dropdown-toggle"
-                      data-toggle="dropdown"
-                      href="#"
-                      role="button"
-                      aria-haspopup="true"
-                      aria-expanded="false"
-                      ><h5>Manage Books/Shelf</h5>
-                    </a>
-                    <div class="dropdown-menu">
-                      <a class="dropdown-item" href="/add_book"><h5>Add Book</h5></a>
-                      <a class="dropdown-item" href="/remove_book"><h5>Remove Book</h5></a>
-                      <a class="dropdown-item" href="/books"><h5>View Book</h5></a>
-                      <a class="dropdown-item" href="#"><h5>Issue Book</h5></a>
-                      <a class="dropdown-item" href="#"><h5>View Issued Book</h5></a>
-                      <a class="dropdown-item" href="#"><h5>Edit Shelf</h5></a>
-                    </div>
+                    <a class="nav-link" href="/books"><h5>Books</h5></a>
+                  </li>
+
+                    {% elif email!='' %}
+                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                    <a class="nav-link" href="/books"><h5>Books</h5></a>
                   </li>
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                        <a class="nav-link" href="#"><h5>Manage Fines</h5></a>
+                        <a class="nav-link" href="/user_dashboard"><h5>Dashboard</h5></a>
                      </li>
-                    {%else%}
+                    {% else %}
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                        <a class="nav-link" href="/books"><h5>Books</h5></a>
-                     </li>
+                    <a class="nav-link" href="/books"><h5>Books</h5></a>
+                  </li>
                     {%endif%}
 
                 </ul>

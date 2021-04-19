@@ -64,26 +64,25 @@
                       <a class="dropdown-item" href="{{ url_for('logout') }}"><h5>Logout</h5></a>
                     </div>
                   </li>
-
                   {%else%}
-
                   <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                     <a class="nav-link" href="/login"><h5>Login/SignUp</h5></a>
                   </li>
                   {%endif%}
 
-                    {% if email!='' and email[:3]=='lib'%}
-                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                        <a class="nav-link" href="/lib_dashboard"><h5>Dashboard</h5></a>
-                     </li>
+                  {% if email!='' and email[:3]!='lib'%}
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                     <a class="nav-link" href="/books"><h5>Books</h5></a>
                   </li>
-                    {%else%}
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                        <a class="nav-link" href="/books"><h5>Books</h5></a>
+                        <a class="nav-link" href="/user_dashboard"><h5>Dashboard</h5></a>
                      </li>
+                    {% else %}
+                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                    <a class="nav-link" href="/books"><h5>Books</h5></a>
+                  </li>
                     {%endif%}
+
                 </ul>
               </div>
             </nav>
@@ -97,75 +96,63 @@
     <br>
     <br>
 
-    <div class="container">
-      <div class="row py-5 mt-4 align-items-center">
-
-        <div class="col-md-5 pr-lg-5 mb-5 mb-md-0">
-          <img src="{{url_for('static', filename='./images/i1.png')}}" alt="" class="img-fluid mb-3 d-none d-md-block" />
-          <h1>Remove Book</h1>
-        </div>
-        <div class="col-md-7 col-lg-6 ml-auto">
-            {% if msg %}
-              <div class="alert alert-info alert-dismissible">
-                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                 <strong>{{msg}}</strong>
-              </div>
-            {%endif%}
-          <form action="{{ url_for('remove_book') }}" method="post">
-            <div class="row">
-              <!-- Id number -->
-              <div class="input-group col-lg-12 mb-4">
-                <div class="input-group-prepend">
-                  <span
-                    class="input-group-text bg-white px-4 border-md border-right-0"
-                  >
-                    <i class="fa fa-list-ol" aria-hidden="true"></i>
-                  </span>
-                </div>
-
-                <input
-                  id="book_id"
-                  type="number"
-                  name="book_id"
-                  placeholder="Id"
-                  class="form-control bg-white border-md border-left-0 pl-3"
-                  required
-                />
-              </div>
-              <div class="input-group col-lg-12 mb-4">
-                <div class="input-group-prepend">
-                  <span
-                    class="input-group-text bg-white px-4 border-md border-right-0"
-                  >
-                    <i class="fa fa-list-ol" aria-hidden="true"></i>
-                  </span>
-                </div>
-
-                <input
-                  id="isbn"
-                  type="number"
-                  name="isbn"
-                  placeholder="ISBN"
-                  class="form-control bg-white border-md border-left-0 pl-3"
-                  required
-                />
-              </div>
-
-
-
-
-              <!-- Submit Button -->
-              <div class="form-group col-lg-12 mx-auto mb-0">
-                <button class="btn btn-block py-2">
-                  <span class="font-weight-bold">Remove Book</span>
-                </button>
-              </div>
+    <div class = "container" >
+        <h1>Following</h1>
+        {%if l %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                  {% if email!='' and email[:3]!='lib'%}
+                    <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                    </tr>
+                  </thead>
+                    <tbody>
+                  {% for user in l %}
+                        <tr>
+                        <td> {{user}} </td>
+                        </tr>
+                  {% endfor %}
+                    </tbody>
+                {%else%}
+                    <p><h2>Not following</h2></p>
+                {%endif%}
+                </table>
             </div>
-          </form>
-        </div>
-      </div>
+        {%else%}
+            <p><h2>Not following</h2></p>
+        {%endif%}
     </div>
-    <!--footer-->
+
+    <div class = "container" >
+        <h1>Followers</h1>
+        {%if l1 %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                  {% if email!='' and email[:3]!='lib'%}
+                    <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                    </tr>
+                  </thead>
+                    <tbody>
+                  {% for user in l1 %}
+                        <tr>
+                        <td> {{user}} </td>
+                        </tr>
+                  {% endfor %}
+                    </tbody>
+                {%else%}
+                  <p><h2>No followers</h2></p>
+                {%endif%}
+                </table>
+            </div>
+        {%else%}
+            <p><h2>No followers</h2></p>
+        {%endif%}
+    </div>
+
+  <!--footer-->
     <footer class="footer" id="footer">
     <div class="container">
         <div class="row">
@@ -216,8 +203,9 @@
             </div>
         </div>
     </div>
-</footer>
-    <script src="{{url_for('static',filename='./js/add_book.js')}}"></script>
+
+    <script src="{{url_for('static', filename='./js/script.js')}}"></script>
+    <script src="{{url_for('static', filename='./js/login.js')}}"></script>
     <script
       src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
       integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

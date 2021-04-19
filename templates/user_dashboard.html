@@ -64,7 +64,9 @@
                       <a class="dropdown-item" href="{{ url_for('logout') }}"><h5>Logout</h5></a>
                     </div>
                   </li>
-
+                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                       <a class="nav-link" href="/registeredusers"><h5>Members List</h5></a>
+                   </li>
                   {%else%}
 
                   <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
@@ -72,12 +74,23 @@
                   </li>
                   {%endif%}
 
-                    {% if email!='' and email[:3]=='lib'%}
-                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                        <a class="nav-link" href="/lib_dashboard"><h5>Dashboard</h5></a>
-                     </li>
+                  {% if email!='' and email[:3]!='lib'%}
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                    <a class="nav-link" href="/books"><h5>Books</h5></a>
+                    <a
+                      class="nav-link dropdown-toggle"
+                      data-toggle="dropdown"
+                      href="#"
+                      role="button"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                      ><h5>Manage Account</h5>
+                    </a>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item" href="#"><h5>Personal Bookshelf</h5></a>
+                      <a class="dropdown-item" href="/follower_following"><h5>Followers/Following</h5></a>
+                      <a class="dropdown-item" href="/books"><h5>View Book</h5></a>
+                      <a class="dropdown-item" href="#"><h5>Fines</h5></a>
+                    </div>
                   </li>
                     {%else%}
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
@@ -98,73 +111,22 @@
     <br>
 
     <div class="container">
-      <div class="row py-5 mt-4 align-items-center">
-
-        <div class="col-md-5 pr-lg-5 mb-5 mb-md-0">
-          <img src="{{url_for('static', filename='./images/i1.png')}}" alt="" class="img-fluid mb-3 d-none d-md-block" />
-          <h1>Remove Book</h1>
-        </div>
-        <div class="col-md-7 col-lg-6 ml-auto">
-            {% if msg %}
-              <div class="alert alert-info alert-dismissible">
-                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                 <strong>{{msg}}</strong>
-              </div>
-            {%endif%}
-          <form action="{{ url_for('remove_book') }}" method="post">
-            <div class="row">
-              <!-- Id number -->
-              <div class="input-group col-lg-12 mb-4">
-                <div class="input-group-prepend">
-                  <span
-                    class="input-group-text bg-white px-4 border-md border-right-0"
-                  >
-                    <i class="fa fa-list-ol" aria-hidden="true"></i>
-                  </span>
+        <div class="row home_img">
+            <div class="col-lg-7 col-md-7 col-sm-12">
+                <div class="card" >
+                   <img src="{{url_for('static', filename='./images/bglib-dashboard.png')}}" />
                 </div>
-
-                <input
-                  id="book_id"
-                  type="number"
-                  name="book_id"
-                  placeholder="Id"
-                  class="form-control bg-white border-md border-left-0 pl-3"
-                  required
-                />
-              </div>
-              <div class="input-group col-lg-12 mb-4">
-                <div class="input-group-prepend">
-                  <span
-                    class="input-group-text bg-white px-4 border-md border-right-0"
-                  >
-                    <i class="fa fa-list-ol" aria-hidden="true"></i>
-                  </span>
-                </div>
-
-                <input
-                  id="isbn"
-                  type="number"
-                  name="isbn"
-                  placeholder="ISBN"
-                  class="form-control bg-white border-md border-left-0 pl-3"
-                  required
-                />
-              </div>
-
-
-
-
-              <!-- Submit Button -->
-              <div class="form-group col-lg-12 mx-auto mb-0">
-                <button class="btn btn-block py-2">
-                  <span class="font-weight-bold">Remove Book</span>
-                </button>
-              </div>
             </div>
-          </form>
+            <div class="col-lg-5 col-md-5 col-sm-12">
+                <div class="card txt" >
+                    <h1>WELCOME  TO  DASHBOARD</h1>
+                    <h4>Member can see followers following .......</h4>
+                    <h5>*****</h5>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
+
     <!--footer-->
     <footer class="footer" id="footer">
     <div class="container">
@@ -217,7 +179,8 @@
         </div>
     </div>
 </footer>
-    <script src="{{url_for('static',filename='./js/add_book.js')}}"></script>
+    <script src="{{url_for('static', filename='./js/script.js')}}"></script>
+    <script src="{{url_for('static', filename='./js/login.js')}}"></script>
     <script
       src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
       integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

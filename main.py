@@ -132,7 +132,7 @@ def login():
                     session['username'] = account['member_name']
                     session['email1'] = account['email']
                     session['address'] = account['address']
-                    return redirect(url_for('registeredusers'))
+                    return redirect(url_for('user_dashboard'))
                 else:
                   msg = 'Incorrect email/password!'
         else:
@@ -210,34 +210,34 @@ def lib_dashboard():
         return render_template('lib_dashboard.html', username='librarian', email=session['email1'])
     return redirect(url_for('login'))
 
+@app.route("/user_dashboard/")
+def user_dashboard():
+    if 'loggedin' in session:
+        return render_template('user_dashboard.html', username='librarian', email=session['email1'])
+    return redirect(url_for('login'))
+
 
 @app.route("/remove_book/", methods=['GET', 'POST'])
 def remove_book():
-    print('1')
     msg = ''
     if request.method == 'POST':
-        print('2')
+        book_id = request.form['book_id']
         isbn = request.form['isbn']
-        count = request.form['count']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('select shelf_Id,count from book where ISBN = %s', (isbn,))
+        cursor.execute('select shelf_Id,count from book where book_id = %s', (book_id,))
         a = cursor.fetchone()
-        print('3')
-        print(a)
         cursor.execute('select capacity from shelf where shelf_Id = %s', (a['shelf_Id'],))
         c = cursor.fetchone()
-        if int(count) <= int(a['count']):
-                if int(a['count']-int(count))==0:
-                    cursor.execute('update shelf set shelf_status = %s where shelf_Id = %s',
+        if 1 <= int(a['count']):
+            if int(a['count'])-1==0:
+                cursor.execute('update shelf set shelf_status = %s where shelf_Id = %s',
                                     ('available', a['shelf_Id'],))
-                    cursor.execute('delete from book where ISBN = %s', (isbn), )
-                cursor.execute('update shelf set capacity = %s where shelf_Id = %s', (int(c['capacity'])+int(count),a['shelf_Id'], ))
-                cursor.execute('update book set count = %s where ISBN = %s', (int(a['count']) - int(count),isbn, ))
-
+            cursor.execute('delete from book where book_id = %s', (book_id), )
+            cursor.execute('update shelf set capacity = %s where shelf_Id = %s', (int(c['capacity'])+1,a['shelf_Id'], ))
+            cursor.execute('update book set count = %s where ISBN = %s', (int(a['count']) - 1,isbn, ))
+            msg= 'Book removed successfully.'
         else:
-                msg = 'Cannot remove books .'
-
-        print('hiiiiiii')
+            msg = 'Cannot remove books.'
         mysql.connection.commit()
         cursor.close()
 
@@ -246,7 +246,7 @@ def remove_book():
         if email[:3] == 'lib':
             return render_template('remove_book.html', username=session['username'], msg=msg, email=session['email1'])
         else:
-            return redirect(url_for('login'))
+            return redirect(url_for('home'))
     else:
         return redirect(url_for('login'))
 
@@ -273,15 +273,12 @@ def registeredusers():
 
 @app.route("/add_book/", methods=['GET', 'POST'])
 def add_book():
-    print('1')
     msg = ''
     if request.method == 'POST':
-        print('2')
         title = request.form['title']
         author = request.form['author']
         isbn = request.form['isbn']
         year = request.form['year']
-        count = request.form['count']
         category = request.form['category']
         file = request.files['file']
         filename = secure_filename(file.filename)
@@ -292,36 +289,22 @@ def add_book():
             app.config['UPLOAD_FOLDER'] = 'static/Uploads'
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], f_name))
             cursor1 = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor1.execute('select shelf_Id,count from book where ISBN = %s', (isbn,))
-            a = cursor1.fetchone()
-            if a:
-                print('3')
-                print(a)
-                cursor1.execute('select capacity from shelf where shelf_Id = %s', (a['shelf_Id'],))
-                c = cursor1.fetchone()
-                if int(count) <= 75-int(a['count']):
-                    cursor1.execute('update shelf set capacity = %s where shelf_Id = %s', (int(c['capacity'])-int(count),a['shelf_Id'], ))
-                    cursor1.execute('update book set count = %s where ISBN = %s', (int(a['count']) + int(count),isbn, ))
-                    if int(count)==75-int(a['count']):
-                        cursor1.execute('update shelf set shelf_status = %s where shelf_Id = %s',
-                                    ('no space', a['shelf_Id'],))
-                else:
-                    msg = 'Cannot add books overflow.'
-            else:
-                print('poppppiiiii')
-                cursor1.execute('select shelf_Id from shelf where capacity = %s', (75,))
-                s1 = cursor1.fetchone()
-                print(s1)
-                if int(count) <= 75:
-                    print('4')
-                    cursor1.execute('INSERT INTO book VALUES (%s, % s, % s, % s,% s,% s,% s,%s,% s)',
-                                (isbn, title, author, year, s1['shelf_Id'], count,0,category,f_name))
-                    cursor1.execute('update shelf set capacity = %s where shelf_Id = %s', (75-int(count),s1['shelf_Id'],))
-                    if int(count)==75:
+
+            cursor1.execute('select shelf_Id,capacity from shelf where capacity <> %s', (0,))
+            s1 = cursor1.fetchone()
+            print(s1)
+            if s1:
+                    p= cursor1.execute('select count from book where ISBN= %s limit 1',(isbn))
+                    cursor1.execute('INSERT INTO book VALUES (NULL,%s, % s, % s, % s,% s,% s,% s,%s,%s,% s)',
+                                (isbn, title, author, year, s1['shelf_Id'], p,0,category,'on shelf',f_name))
+                    cursor1.execute('update shelf set capacity = %s where shelf_Id = %s', (s1['capacity']-1,s1['shelf_Id'],))
+                    cursor1.execute('update book set count = %s where ISBN = %s',
+                                    (p+1, isbn,))
+                    if p+1==75:
                         cursor1.execute('update shelf set shelf_status = %s where shelf_Id = %s',
                                     ('no space', s1['shelf_Id'],))
-
-                else:
+                    msg = 'Book added successfully'
+            else:
                     msg = 'Cannot add books overflow.'
             print('hiiiiiii')
             mysql.connection.commit()
@@ -333,7 +316,7 @@ def add_book():
         if email[:3] == 'lib':
             return render_template('add_book.html', username=session['username'], msg=msg, email=session['email1'])
         else:
-            return redirect(url_for('login'))
+            return redirect(url_for('home'))
     else:
         return redirect(url_for('login'))
 
@@ -423,5 +406,49 @@ def borrow_book(id):
         return render_template('books.html', username=session['username'],msg=msg,detail=details,email=email)
     else:
         return redirect(url_for('login'))
+
+@app.route('/follower_following', methods=['GET', 'POST'])
+def follower_following():
+    if 'loggedin' in session:
+        email = session['email1']
+        if email[:3] != 'lib':
+            cur = mysql.connection.cursor()
+            cur.execute('select member_name from lib_member where M_ID in (select M_ID2 from follower_following where M_Id1= %s)',([session['id']],))
+            list = cur.fetchall()
+            cur.execute(
+            'select member_name from lib_member where M_ID in (select M_ID1 from follower_following where M_Id2= %s)',
+            ([session['id']],))
+            list1 = cur.fetchall()
+            mysql.connection.commit()
+            cur.close()
+            l=[]
+            for i in list:
+                l.append(i[0])
+            l1 = []
+            for i in list1:
+                l1.append(i[0])
+            return render_template('follower_following.html', username=session['username'],l=l,l1=l1,email=session['email1'])
+        else:
+            return redirect(url_for('home'))
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/shelf', methods=['GET', 'POST'])
+def shelf():
+    if 'loggedin' in session:
+        email = session['email1']
+        if email[:3] == 'lib':
+            cur = mysql.connection.cursor()
+            cur.execute('select * from shelf ')
+            list = cur.fetchall()
+            mysql.connection.commit()
+            cur.close()
+            return render_template('shelf.html', username=session['username'],shelfDetails=list,email=session['email1'])
+        else:
+            return redirect(url_for('home'))
+    else:
+        return redirect(url_for('login'))
+
+
 
 app.run(debug=True)
