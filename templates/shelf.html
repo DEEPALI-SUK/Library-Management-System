@@ -64,26 +64,25 @@
                       <a class="dropdown-item" href="{{ url_for('logout') }}"><h5>Logout</h5></a>
                     </div>
                   </li>
-
                   {%else%}
-
                   <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                     <a class="nav-link" href="/login"><h5>Login/SignUp</h5></a>
                   </li>
                   {%endif%}
 
-                    {% if email!='' and email[:3]=='lib'%}
-                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                  {% if email!='' and email[:3]=='lib'%}
+                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                         <a class="nav-link" href="/lib_dashboard"><h5>Dashboard</h5></a>
                      </li>
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                     <a class="nav-link" href="/books"><h5>Books</h5></a>
                   </li>
-                    {%else%}
+                    {% else %}
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                        <a class="nav-link" href="/books"><h5>Books</h5></a>
-                     </li>
+                    <a class="nav-link" href="/books"><h5>Books</h5></a>
+                  </li>
                     {%endif%}
+
                 </ul>
               </div>
             </nav>
@@ -97,75 +96,34 @@
     <br>
     <br>
 
-    <div class="container">
-      <div class="row py-5 mt-4 align-items-center">
+    <div class = "container" >
+         <div class="table-responsive">
+                <table class="table table-hover">
 
-        <div class="col-md-5 pr-lg-5 mb-5 mb-md-0">
-          <img src="{{url_for('static', filename='./images/i1.png')}}" alt="" class="img-fluid mb-3 d-none d-md-block" />
-          <h1>Remove Book</h1>
-        </div>
-        <div class="col-md-7 col-lg-6 ml-auto">
-            {% if msg %}
-              <div class="alert alert-info alert-dismissible">
-                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                 <strong>{{msg}}</strong>
-              </div>
-            {%endif%}
-          <form action="{{ url_for('remove_book') }}" method="post">
-            <div class="row">
-              <!-- Id number -->
-              <div class="input-group col-lg-12 mb-4">
-                <div class="input-group-prepend">
-                  <span
-                    class="input-group-text bg-white px-4 border-md border-right-0"
-                  >
-                    <i class="fa fa-list-ol" aria-hidden="true"></i>
-                  </span>
-                </div>
+                    <thead>
+                    <tr>
+                      <th scope="col">shelf_ID</th>
+                      <th scope="col">Capacity</th>
+                      <th scope="col">shelf_status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for shelf in shelfDetails %}
+                  <tr>
+                  <td> {{shelf[0]}} </td>
+                  <td> {{shelf[1]}} </td>
+                  <td> {{shelf[2]}} </td>
+                  </tr>
 
-                <input
-                  id="book_id"
-                  type="number"
-                  name="book_id"
-                  placeholder="Id"
-                  class="form-control bg-white border-md border-left-0 pl-3"
-                  required
-                />
-              </div>
-              <div class="input-group col-lg-12 mb-4">
-                <div class="input-group-prepend">
-                  <span
-                    class="input-group-text bg-white px-4 border-md border-right-0"
-                  >
-                    <i class="fa fa-list-ol" aria-hidden="true"></i>
-                  </span>
-                </div>
+                  {% endfor %}
 
-                <input
-                  id="isbn"
-                  type="number"
-                  name="isbn"
-                  placeholder="ISBN"
-                  class="form-control bg-white border-md border-left-0 pl-3"
-                  required
-                />
-              </div>
+                  </tbody>
 
-
-
-
-              <!-- Submit Button -->
-              <div class="form-group col-lg-12 mx-auto mb-0">
-                <button class="btn btn-block py-2">
-                  <span class="font-weight-bold">Remove Book</span>
-                </button>
-              </div>
+                </table>
             </div>
-          </form>
-        </div>
-      </div>
     </div>
-    <!--footer-->
+
+  <!--footer-->
     <footer class="footer" id="footer">
     <div class="container">
         <div class="row">
@@ -216,8 +174,9 @@
             </div>
         </div>
     </div>
-</footer>
-    <script src="{{url_for('static',filename='./js/add_book.js')}}"></script>
+
+    <script src="{{url_for('static', filename='./js/script.js')}}"></script>
+    <script src="{{url_for('static', filename='./js/login.js')}}"></script>
     <script
       src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
       integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

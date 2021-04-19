@@ -64,9 +64,7 @@
                       <a class="dropdown-item" href="{{ url_for('logout') }}"><h5>Logout</h5></a>
                     </div>
                   </li>
-                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                       <a class="nav-link" href="/registeredusers"><h5>Members List</h5></a>
-                   </li>
+
                   {%else%}
 
                   <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
@@ -78,27 +76,9 @@
                         <a class="nav-link" href="/lib_dashboard"><h5>Dashboard</h5></a>
                      </li>
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                    <a
-                      class="nav-link dropdown-toggle"
-                      data-toggle="dropdown"
-                      href="#"
-                      role="button"
-                      aria-haspopup="true"
-                      aria-expanded="false"
-                      ><h5>Manage Books/Shelf</h5>
-                    </a>
-                    <div class="dropdown-menu">
-                      <a class="dropdown-item" href="/add_book"><h5>Add Book</h5></a>
-                      <a class="dropdown-item" href="/remove_book"><h5>Remove Book</h5></a>
-                      <a class="dropdown-item" href="/books"><h5>View Book</h5></a>
-                      <a class="dropdown-item" href="#"><h5>Issue Book</h5></a>
-                      <a class="dropdown-item" href="#"><h5>View Issued Book</h5></a>
-                      <a class="dropdown-item" href="#"><h5>Edit Shelf</h5></a>
-                    </div>
+                    <a class="nav-link" href="/books"><h5>Books</h5></a>
                   </li>
-                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                        <a class="nav-link" href="#"><h5>Manage Fines</h5></a>
-                     </li>
+
                     {%else%}
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                         <a class="nav-link" href="/books"><h5>Books</h5></a>
@@ -233,25 +213,7 @@
                 />
               </div>
 
-              <!-- Copies -->
-              <div class="input-group col-lg-12 mb-4">
-                <div class="input-group-prepend">
-                  <span
-                    class="input-group-text bg-white px-4 border-md border-right-0"
-                  >
-                    <i class="fa fa-list-ol" aria-hidden="true"></i>
-                  </span>
-                </div>
 
-                <input
-                  id="count"
-                  type="number"
-                  name="count"
-                  placeholder="Copies"
-                  class="form-control bg-white border-md border-left-0 pl-3"
-                  required
-                />
-              </div>
 
 
               <!-- Image -->
