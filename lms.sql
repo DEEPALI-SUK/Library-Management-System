@@ -61,6 +61,16 @@ CREATE TABLE book_status(
      foreign key(book_id) references book(book_id) on delete cascade on update cascade
 );
 
+CREATE TABLE onhold(
+     M_Id int not null,
+     book_id int not null,
+     hold_date date not null,
+     hold_time time(0) not null,
+     primary key(M_Id, book_id),
+     foreign key(M_Id) references lib_member(M_Id) on delete cascade on update cascade,
+     foreign key(book_id) references book(book_id) on delete cascade on update cascade
+);
+
 CREATE TABLE follower_following(
 M_Id1 int not null,
 M_Id2 int not null,
@@ -88,7 +98,8 @@ INSERT INTO shelf (shelf_Id, capacity, shelf_status) VALUES (12, 75, 'available'
 
 select * from book;
 select * from shelf ;
+select * from borrow;
+select * from book_status;
+select * from onhold;
 
-
-
-select * from  librarian;
+select * from  lib_member;
