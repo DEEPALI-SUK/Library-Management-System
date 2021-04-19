@@ -18,12 +18,120 @@ app.config['MYSQL_DB'] = 'lms'
 
 mysql = MySQL(app)
 
+
 @app.route("/", methods=['GET', 'POST'])
 def home():
-    if 'loggedin' in session:
-        return render_template('index.html', username=session['username'], email=session['email1'])
+    if request.method == 'POST':
+        title = request.form['title']
+        author = request.form['author']
+        category = request.form['category']
+        isbn = request.form['isbn']
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        if title == "" and author == "" and category == "" and isbn == "":
+            cur.execute(
+                'SELECT ISBN, title, author, year_of_publication, category, image FROM book')
+            result = cur.fetchall()
+
+        elif title != "":
+            if author == "" and category == "" and isbn == "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where title = % s', [title])
+                result = cur.fetchall()
+            elif author == "" and category == "" and isbn != "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where title = % s and isbn = %s' ,
+                    ([title], [isbn]))
+                result = cur.fetchall()
+            elif author == "" and category != "" and isbn == "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where title = % s and category = %s' ,
+                    ([title], [category]))
+                result = cur.fetchall()
+            elif author == "" and category != "" and isbn != "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where title = % s and category = %s and isbn = %s' ,
+                    ([title], [category], [isbn]))
+                result = cur.fetchall()
+            elif author != "" and category == "" and isbn == "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where title = % s and author = %s' ,
+                    ([title], [author]))
+                result = cur.fetchall()
+            elif author != "" and category == "" and isbn != "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where title = % s and author = %s and isbn = %s',
+                    ([title], [author],[isbn]))
+                result = cur.fetchall()
+            elif author != "" and category != "" and isbn == "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where title = % s and author = %s and category= %s',
+                    ([title], [author], [category]))
+                result = cur.fetchall()
+            elif author != "" and category != "" and isbn != "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where title = % s and author = %s and category = %s and isbn = %s',
+                    ([title], [author], [category], [isbn]))
+                result = cur.fetchall()
+
+        elif title == "" and author!="":
+            if category == "" and isbn == "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where author = %s',
+                    ([author]))
+                result = cur.fetchall()
+            elif category == "" and isbn != "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where author = %s and isbn = %s',
+                    ([author], [isbn]))
+                result = cur.fetchall()
+            elif category != "" and isbn == "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where author = %s and category = %s',
+                    ([author], [category]))
+                result = cur.fetchall()
+            elif category != "" and isbn != "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where author = %s and category = %s and isbn = %s',
+                     ([author], [category], [isbn]))
+                result = cur.fetchall()
+
+        elif title == "" and author == "":
+            if category == "" and isbn != "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where isbn = %s',
+                     ([isbn]))
+                result = cur.fetchall()
+            elif category != "" and isbn == "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where category = %s',
+                    ([category]))
+                result = cur.fetchall()
+            elif category != "" and isbn != "":
+                cur.execute(
+                    'SELECT ISBN, title, author, year_of_publication, category, image FROM book where category = %s and isbn = %s',
+                    ([category], [isbn]))
+                result = cur.fetchall()
+
+        mysql.connection.commit()
+        cur.close()
+        if result:
+            if 'loggedin' in session:
+                return render_template('index.html', detail=result, msg="Result for the search",
+                                       username=session['username'], email = session['email1'])
+            else:
+                return render_template('index.html', detail=result, msg="Result for the search", username="", email="")
+        else:
+            if 'loggedin' in session:
+                return render_template('index.html', detail="No records found", username=session['username'], email = session['email1'])
+            else:
+                return render_template('index.html', detail="No records found", username="", email="")
     else:
-        return render_template('index.html', username="", email="")
+        if 'loggedin' in session:
+            return render_template('index.html', username=session['username'], email=session['email1'])
+        else:
+            return render_template('index.html', username="", email="")
+
+
 
 @app.route("/update_profile/", methods=['GET', 'POST'])
 def update_profile():
@@ -268,6 +376,11 @@ def registeredusers():
             cur.close()
             return render_template('registeredusers.html', userDetails=userDetails, l =l, username=session['username'],
                                    email=session['email1'])
+        else:
+            return render_template('registeredusers.html', username="", email="")
+    else:
+        return render_template('login.html', username="", email="")
+
 
 
 
@@ -294,7 +407,7 @@ def add_book():
             s1 = cursor1.fetchone()
             print(s1)
             if s1:
-                    p= cursor1.execute('select count from book where ISBN= %s limit 1',(isbn))
+                    p= cursor1.execute('select count from book where ISBN= %s limit 1',[isbn])
                     cursor1.execute('INSERT INTO book VALUES (NULL,%s, % s, % s, % s,% s,% s,% s,%s,%s,% s)',
                                 (isbn, title, author, year, s1['shelf_Id'], p,0,category,'on shelf',f_name))
                     cursor1.execute('update shelf set capacity = %s where shelf_Id = %s', (s1['capacity']-1,s1['shelf_Id'],))
