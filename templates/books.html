@@ -118,10 +118,9 @@
                 <p>Publication Year: {{u['year_of_publication']}}</p>
                     {% if email!='' and email[:3]!='lib'%}
                 <div class="btn">
-                {% if u['borrow_count']==u['count'] %}
-                            <button>On Hold</button>
-                {% else %}
-                            <a href="{{url_for('borrow_book',id=u['ISBN'])}}"><button>Borrow</button></a>
+                    <a href="{{url_for('on_hold',id=u['book_id'])}}"><button>On Hold</button></a>
+                {% if u['borrow_count']<1 %}
+                    <a href="{{url_for('borrow_book',id=u['book_id'])}}"><button>Borrow</button></a>
                 {%endif%}
                 </div>
                     {%endif%}
@@ -149,10 +148,9 @@
                 <p>Publication Year: {{u['year_of_publication']}}</p>
                     {% if email!='' and email[:3]!='lib'%}
                 <div class="btn">
-                {% if u['borrow_count']==u['count'] %}
-                            <button>On Hold</button>
-                {% else %}
-                            <a href="{{url_for('borrow_book',id=u['ISBN'])}}"><button>Borrow</button></a>
+                    <a href="{{url_for('on_hold',id=u['book_id'])}}"><button>On Hold</button></a>
+                {% if u['borrow_count']<1 %}
+                    <a href="{{url_for('borrow_book',id=u['book_id'])}}"><button>Borrow</button></a>
                 {%endif%}
                 </div>
                     {%endif%}
@@ -180,10 +178,9 @@
                 <p>Publication Year: {{u['year_of_publication']}}</p>
                     {% if email!='' and email[:3]!='lib'%}
                 <div class="btn">
-                {% if u['borrow_count']==u['count'] %}
-                            <button>On Hold</button>
-                {% else %}
-                            <a href="{{url_for('borrow_book',id=u['ISBN'])}}"><button>Borrow</button></a>
+                    <a href="{{url_for('on_hold',id=u['book_id'])}}"><button>On Hold</button></a>
+                {% if u['borrow_count']<1 %}
+                    <a href="{{url_for('borrow_book',id=u['book_id'])}}"><button>Borrow</button></a>
                 {%endif%}
                 </div>
                     {%endif%}
@@ -211,10 +208,9 @@
                 <p>Publication Year: {{u['year_of_publication']}}</p>
                     {% if email!='' and email[:3]!='lib'%}
                 <div class="btn">
-                {% if u['borrow_count']==u['count'] %}
-                            <button>On Hold</button>
-                {% else %}
-                            <a href="{{url_for('borrow_book',id=u['ISBN'])}}"><button>Borrow</button></a>
+                    <a href="{{url_for('on_hold',id=u['book_id'])}}"><button>On Hold</button></a>
+                {% if u['borrow_count']<1 %}
+                    <a href="{{url_for('borrow_book',id=u['book_id'])}}"><button>Borrow</button></a>
                 {%endif%}
                 </div>
                     {%endif%}
