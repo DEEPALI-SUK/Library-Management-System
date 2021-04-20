@@ -18,10 +18,33 @@ app.config['MYSQL_DB'] = 'lms'
 
 mysql = MySQL(app)
 
+def update_fine():
+        cur = mysql.connection.cursor()
+        cur.execute('select M_Id from borrow')
+        l1=cur.fetchall()
+        for j in l1:
+            print(j[0])
+            cur.execute(
+                'select due_date from book inner join borrow on book.book_id= borrow.book_id where borrow.M_Id=%s',
+                ([j[0]]))
+            list1 = cur.fetchall()
+            sum = 0
+            for i in list1:
+                mdate1 = date.today()
+                rdate1 = i[0]
+                delta = (mdate1 - rdate1).days
+                print(delta)
+                if delta > 30:
+                    sum = sum + (delta - 30) * 10
+            cur.execute('update lib_member set unpaid_fines=%s where M_Id=%s', (sum, j[0]))
+        mysql.connection.commit()
+        cur.close()
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
+    update_fine()
     if request.method == 'POST':
+
         title = request.form['title']
         author = request.form['author']
         category = request.form['category']
@@ -116,17 +139,20 @@ def home():
         cur.close()
         if result:
             if 'loggedin' in session:
+
                 return render_template('index.html', detail=result, msg="Result for the search",
                                        username=session['username'], email = session['email1'])
             else:
                 return render_template('index.html', detail=result, msg="Result for the search", username="", email="")
         else:
             if 'loggedin' in session:
+
                 return render_template('index.html', detail="No records found", username=session['username'], email = session['email1'])
             else:
                 return render_template('index.html', detail="No records found", username="", email="")
     else:
         if 'loggedin' in session:
+
             return render_template('index.html', username=session['username'], email=session['email1'])
         else:
             return render_template('index.html', username="", email="")
@@ -135,8 +161,10 @@ def home():
 
 @app.route("/update_profile/", methods=['GET', 'POST'])
 def update_profile():
+    update_fine()
     msg = ''
     if 'loggedin' in session:
+
         if request.method == 'POST':
             name = request.form['name']
             password = request.form['password']
@@ -208,6 +236,7 @@ def update_profile():
 
 @app.route("/login/", methods=['GET', 'POST'])
 def login():
+    update_fine()
     msg = ''
     if request.method == 'POST':
         email = request.form['email']
@@ -249,15 +278,18 @@ def login():
 
 @app.route('/login/logout')
 def logout():
+    update_fine()
     session.pop('loggedin', None)
     session.pop('id', None)
     session.pop('username', None)
     session.pop('email1', None)
     session.pop('address', None)
+
     return redirect(url_for('login'))
 
 @app.route("/register/", methods=['GET', 'POST'])
 def register():
+    update_fine()
     msg = ''
     if request.method == 'POST':
         name = request.form['name']
@@ -314,19 +346,24 @@ def register():
 
 @app.route("/lib_dashboard/")
 def lib_dashboard():
+    update_fine()
     if 'loggedin' in session:
+
         return render_template('lib_dashboard.html', username='librarian', email=session['email1'])
     return redirect(url_for('login'))
 
 @app.route("/user_dashboard/")
 def user_dashboard():
+    update_fine()
     if 'loggedin' in session:
-        return render_template('user_dashboard.html', username='librarian', email=session['email1'])
+
+        return render_template('user_dashboard.html', username=session['username'], email=session['email1'])
     return redirect(url_for('login'))
 
 
 @app.route("/remove_book/", methods=['GET', 'POST'])
 def remove_book():
+    update_fine()
     msg = ''
     if request.method == 'POST':
         book_id = request.form['book_id']
@@ -350,6 +387,7 @@ def remove_book():
         cursor.close()
 
     if 'loggedin' in session:
+
         email = session['email1']
         if email[:3] == 'lib':
             return render_template('remove_book.html', username=session['username'], msg=msg, email=session['email1'])
@@ -361,7 +399,9 @@ def remove_book():
 
 @app.route("/registeredusers/")
 def registeredusers():
+    update_fine()
     if 'loggedin' in session:
+
         cur = mysql.connection.cursor()
         resultValue = cur.execute("SELECT * FROM lib_member")
         if resultValue > 0:
@@ -386,6 +426,7 @@ def registeredusers():
 
 @app.route("/add_book/", methods=['GET', 'POST'])
 def add_book():
+    update_fine()
     msg = ''
     if request.method == 'POST':
         title = request.form['title']
@@ -425,6 +466,7 @@ def add_book():
         else:
             msg = 'Upload image in jpg/png/jpeg format only!'
     if 'loggedin' in session:
+
         email = session['email1']
         if email[:3] == 'lib':
             return render_template('add_book.html', username=session['username'], msg=msg, email=session['email1'])
@@ -436,6 +478,7 @@ def add_book():
 
 @app.route("/books/", methods=['GET', 'POST'])
 def books():
+    update_fine()
     msg = ''
     cursor1 = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor1.execute('select * from book ')
@@ -443,6 +486,7 @@ def books():
     mysql.connection.commit()
     cursor1.close()
     if 'loggedin' in session:
+
         return render_template('books.html', username=session['username'], msg=msg, detail=details,
                                email=session['email1'])
     else:
@@ -450,7 +494,9 @@ def books():
 
 @app.route('/follow/<string:id>', methods=['GET', 'POST'])
 def follow(id):
+    update_fine()
     if 'loggedin' in session:
+
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         print(id)
         cur.execute('insert into follower_following values (%s, %s)', (session['id'], id))
@@ -462,7 +508,9 @@ def follow(id):
 
 @app.route('/unfollow/<string:id>', methods=['GET', 'POST'])
 def unfollow(id):
+    update_fine()
     if 'loggedin' in session:
+
         cur = mysql.connection.cursor()
         cur.execute('delete from follower_following where M_Id2= %s', ( id))
         mysql.connection.commit()
@@ -474,8 +522,10 @@ def unfollow(id):
 
 @app.route('/borrow_book/<string:id>', methods=['GET', 'POST'])
 def borrow_book(id):
+    update_fine()
     msg=''
     if 'loggedin' in session:
+
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('select count(*) from borrow where M_Id=%s',[session['id'], ])
         c=cursor.fetchone()
@@ -528,8 +578,10 @@ def borrow_book(id):
 
 @app.route('/on_hold/<string:id>', methods=['GET', 'POST'])
 def on_hold(id):
+    update_fine()
     msg=''
     if 'loggedin' in session:
+
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('select count(*) from onhold where M_Id=%s',[session['id'], ])
         c=cursor.fetchone()
@@ -579,25 +631,29 @@ def on_hold(id):
 
 @app.route('/follower_following', methods=['GET', 'POST'])
 def follower_following():
+    update_fine()
     if 'loggedin' in session:
         email = session['email1']
         if email[:3] != 'lib':
             cur = mysql.connection.cursor()
-            cur.execute('select member_name from lib_member where M_ID in (select M_ID2 from follower_following where M_Id1= %s)',([session['id']],))
+            cur.execute(
+                'select member_name,M_Id from lib_member where M_Id in (select M_ID2 from follower_following where M_Id1= %s)',
+                ([session['id']],))
             list = cur.fetchall()
             cur.execute(
-            'select member_name from lib_member where M_ID in (select M_ID1 from follower_following where M_Id2= %s)',
+            'select member_name from lib_member where M_Id in (select M_ID1 from follower_following where M_Id2= %s)',
             ([session['id']],))
             list1 = cur.fetchall()
             mysql.connection.commit()
             cur.close()
-            l=[]
+            m = 0
             for i in list:
-                l.append(i[0])
+                m = m + 1
             l1 = []
             for i in list1:
                 l1.append(i[0])
-            return render_template('follower_following.html', username=session['username'],l=l,l1=l1,email=session['email1'])
+            return render_template('follower_following.html', username=session['username'], list=list, l1=l1, m=m,
+                                   email=session['email1'])
         else:
             return redirect(url_for('home'))
     else:
@@ -605,6 +661,7 @@ def follower_following():
 
 @app.route('/shelf', methods=['GET', 'POST'])
 def shelf():
+    update_fine()
     if 'loggedin' in session:
         email = session['email1']
         if email[:3] == 'lib':
@@ -621,6 +678,7 @@ def shelf():
 
 @app.route('/edit_shelf', methods=['GET', 'POST'])
 def edit_shelf():
+    update_fine()
     msg = ''
     if request.method == 'POST':
         book_id = request.form['book_id']
@@ -661,18 +719,23 @@ def edit_shelf():
         return redirect(url_for('login'))
 
 
-
-
-
-
 @app.route('/book_return/<string:id>', methods=['GET', 'POST'])
 def book_return(id):
+    update_fine()
     if 'loggedin' in session:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('select count(*) from onhold where book_id=%s',[id, ])
         c=cursor.fetchone()
+        cursor.execute('select unpaid_fines from lib_member where M_Id=%s', ([session['id'], ]))
+        unpaidfines = cursor.fetchone()
+        print(unpaidfines['unpaid_fines'])
+        cursor.execute('select due_date from borrow where book_id=%s', ([id, ]))
+        due_date = cursor.fetchone()
+        print(due_date)
         email=session['email1']
         if(email[:3]!='lib'):
+
+
             if(c['count(*)']==0):
                 cursor.execute('delete from book_status where book_id=%s and M_Id=%s', (id,session['id']))
                 cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id,session['id']))
@@ -739,11 +802,91 @@ def book_return(id):
                         cursor.execute('update book set book_shelf_status="on shelf" where book_id=%s', id)
                         cursor.execute(
                             'update shelf set capacity =capacity-1 where shelf_Id=(select shelf_Id from book where book_id=%s)',id)
+            delta = (date.today() - due_date['due_date']).days
+
+            if (delta - 30) > 0:
+
+                y=unpaidfines['unpaid_fines'] - ((delta - 30) * 10)
+                
+                cursor.execute('update lib_member set unpaid_fines =%s where M_Id=%s',(y, session['id']))
         mysql.connection.commit()
-        return redirect(url_for('home'))
+        return redirect(url_for('personal_bookshelf'))
     else:
         return redirect(url_for('login'))
 
+@app.route("/personal_bookshelf/")
+def personal_bookshelf():
+    update_fine()
+    if 'loggedin' in session:
+        email = session['email1']
+        if email[:3] != 'lib':
+            cur = mysql.connection.cursor()
+            cur.execute('select borrow.book_id,image,ISBN,title,author,year_of_publication,start_date,due_date from book inner join borrow on book.book_id= borrow.book_id  where borrow.M_Id=%s',([session['id']]))
+            list = cur.fetchall()
+            print(list)
+            mysql.connection.commit()
+            cur.close()
+            return render_template('personal_bookshelf.html',list=list, username=session['username'], email=session['email1'])
+        else:
+            return redirect(url_for('home'))
+    return redirect(url_for('login'))
 
+@app.route("/fines/")
+def fines():
+    update_fine()
+    if 'loggedin' in session:
+        email = session['email1']
+        if email[:3] != 'lib':
+            cur = mysql.connection.cursor()
+            print('1')
+            cur.execute('select borrow.book_id,image,ISBN,title,author,year_of_publication,start_date,due_date from book inner join borrow on book.book_id= borrow.book_id  where borrow.M_Id=%s',([session['id']]))
+            list = cur.fetchall()
+            print('2')
+            cur.execute(
+                'select due_date from book inner join borrow on book.book_id= borrow.book_id where borrow.M_Id=%s',
+                ([session['id']]))
+            list1 = cur.fetchall()
+            print(list1)
+            l = []
+            sum = 0
+            m=0
+            for i in list1:
+                m=m+1
+                mdate1 = date.today()
+                rdate1 = i[0]
+                delta = (mdate1 - rdate1).days
+                print(delta)
+                if delta > 30:
+                    l.append((delta-30) * 10)
+                    sum = sum + (delta-30) * 10
+                else:
+                    l.append(0)
+            cur.execute('update lib_member set unpaid_fines=%s where M_Id=%s', (sum, session['id']))
+            print('4')
+            mysql.connection.commit()
+            cur.close()
+            return render_template('fines.html', list=list, l=l, sum=sum,m=m,
+                                   username=session['username'], email=session['email1'])
+        else:
+            return redirect(url_for('home'))
+    return redirect(url_for('login'))
+
+
+@app.route("/detail/<string:id>")
+def detail(id):
+    update_fine()
+    if 'loggedin' in session:
+        email = session['email1']
+        if email[:3] != 'lib':
+            cur = mysql.connection.cursor()
+            cur.execute('select borrow.book_id,image,ISBN,title,author,year_of_publication,start_date,due_date from book inner join borrow on book.book_id= borrow.book_id  where borrow.M_Id=%s',([id, ]))
+            list = cur.fetchall()
+            print(list)
+            mysql.connection.commit()
+            cur.close()
+            return render_template('detail.html',list=list, username=session['username'], email=session['email1'])
+        else:
+            return redirect(url_for('home'))
+    return redirect(url_for('login'))
 
 app.run(debug=True)
