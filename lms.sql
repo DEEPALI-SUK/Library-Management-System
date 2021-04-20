@@ -82,6 +82,14 @@ foreign key(M_Id2) references lib_member(M_Id) on delete cascade on
 update cascade
 );
 
+CREATE TABLE approve_return(
+     M_Id int not null,
+     book_id int not null,
+     primary key(M_Id, book_id),
+     foreign key(M_Id) references lib_member(M_Id) on delete cascade on update cascade,
+     foreign key(book_id) references book(book_id) on delete cascade on update cascade
+);
+
 
 INSERT INTO shelf (shelf_Id, capacity, shelf_status) VALUES (1, 75, 'available');
 INSERT INTO shelf (shelf_Id, capacity, shelf_status) VALUES (2, 75, 'available');
@@ -101,5 +109,5 @@ select * from shelf ;
 select * from borrow;
 select * from book_status;
 select * from onhold;
-
+select * from approve_return;
 select * from  lib_member;

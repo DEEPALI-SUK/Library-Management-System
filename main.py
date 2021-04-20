@@ -721,24 +721,57 @@ def edit_shelf():
 
 @app.route('/book_return/<string:id>', methods=['GET', 'POST'])
 def book_return(id):
+    if 'loggedin' in session:
+        email = session['email1']
+        if email[:3] != 'lib':
+            cur = mysql.connection.cursor()
+            cur.execute('insert into approve_return values (%s,%s)',(session['id'],id))
+            mysql.connection.commit()
+            cur.close()
+        return redirect(url_for('personal_bookshelf'))
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/return_book/', methods=['GET', 'POST'])
+def return_book():
+    if 'loggedin' in session:
+        email = session['email1']
+        if email[:3] == 'lib':
+            cur = mysql.connection.cursor()
+            cur.execute('select * from approve_return ')
+            list = cur.fetchall()
+            mysql.connection.commit()
+            cur.close()
+            return render_template('return_book.html', username=session['username'],returnbookdeatails=list,email=session['email1'])
+        else:
+            return redirect(url_for('home'))
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/approve_return/<string:id>', methods=['GET', 'POST'])
+def approve_return(id):
     update_fine()
     if 'loggedin' in session:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('select count(*) from onhold where book_id=%s',[id, ])
         c=cursor.fetchone()
-        cursor.execute('select unpaid_fines from lib_member where M_Id=%s', ([session['id'], ]))
+        cursor.execute('select M_Id from approve_return where book_id=%s', [id, ])
+        v = cursor.fetchone()
+        v = v['M_Id']
+        cursor.execute('delete from approve_return where book_id=%s', [id, ])
+        cursor.execute('select unpaid_fines from lib_member where M_Id=%s', (v, ))
         unpaidfines = cursor.fetchone()
         print(unpaidfines['unpaid_fines'])
         cursor.execute('select due_date from borrow where book_id=%s', ([id, ]))
         due_date = cursor.fetchone()
         print(due_date)
         email=session['email1']
-        if(email[:3]!='lib'):
+        if(email[:3]=='lib'):
 
 
             if(c['count(*)']==0):
-                cursor.execute('delete from book_status where book_id=%s and M_Id=%s', (id,session['id']))
-                cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id,session['id']))
+                cursor.execute('delete from book_status where book_id=%s and M_Id=%s', (id,v))
+                cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id,v))
                 cursor.execute('select count(*) from borrow where book_id=%s', [id, ])
                 h=cursor.fetchone()
                 if(h['count(*)']==0):
@@ -771,7 +804,7 @@ def book_return(id):
                    if(r==-1):
                        cursor.execute('delete from book_status where book_id=%s and M_Id=%s',
                                       (id,session['id']))
-                       cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id,session['id']))
+                       cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id,v))
                        cursor.execute('update book set borrow_count =borrow_count-1 where book_id=%s', id)
                        cursor.execute('select count(*) from borrow where book_id=%s', [id, ])
                        g = cursor.fetchone()
@@ -783,17 +816,17 @@ def book_return(id):
                    else:
                        cursor.execute('delete from onhold where book_id=%s and M_Id=%s', (id,r))
                        cursor.execute('delete from book_status where book_id=%s and M_Id=%s',
-                                      (id, session['id']))
+                                      (id, v))
                        cursor.execute('update book_status set status1="borrow" where book_id=%s and M_Id=%s',
                                       (id, r))
                        start_date = date.today()
                        end_date = start_date + timedelta(15)
-                       cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id, session['id']))
+                       cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id, v))
                        cursor.execute('insert into borrow values (%s,%s,%s,%s)',
                                       (r, id, start_date, end_date))
                 else:
-                    cursor.execute('delete from book_status where book_id=%s and M_Id=%s', (id, session['id']))
-                    cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id,session['id']))
+                    cursor.execute('delete from book_status where book_id=%s and M_Id=%s', (id, v))
+                    cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id,v))
                     cursor.execute('update book set borrow_count =borrow_count-1 where book_id=%s', id)
                     cursor.execute('select count(*) from borrow where book_id=%s', [id, ])
                     g = cursor.fetchone()
@@ -808,7 +841,7 @@ def book_return(id):
 
                 y=unpaidfines['unpaid_fines'] - ((delta - 30) * 10)
                 
-                cursor.execute('update lib_member set unpaid_fines =%s where M_Id=%s',(y, session['id']))
+                cursor.execute('update lib_member set unpaid_fines =%s where M_Id=%s',(y, v))
         mysql.connection.commit()
         return redirect(url_for('personal_bookshelf'))
     else:
@@ -933,10 +966,39 @@ def onhold_show():
             cur = mysql.connection.cursor()
             cur.execute('select * from onhold')
             list = cur.fetchall()
-            print(list)
             mysql.connection.commit()
             cur.close()
-            return render_template('onhold_show.html',list=list, username=session['username'], email=session['email1'])
+            return render_template('onhold_show.html', username=session['username'], list=list,
+                                   email=session['email1'])
+        else:
+            return redirect(url_for('home'))
+    return redirect(url_for('login'))
+
+@app.route("/remove_onhold/<string:id>")
+def remove_onhold(id):
+    update_fine()
+    if 'loggedin' in session:
+        email = session['email1']
+        if email[:3] == 'lib':
+            cursor = mysql.connection.cursor()
+            cursor.execute('select M_Id from onhold where book_id=%s', [id, ])
+            v = cursor.fetchone()
+            v = v[0]
+            cursor.execute('delete from onhold where book_id=%s and M_Id=%s', (id, v))
+            cursor.execute('update book_status set status1="borrowed" where book_id=%s and M_Id=%s',
+                           (id, v))
+            cursor.execute('update book set book_shelf_status="not on shelf" where book_id=%s', id)
+            cursor.execute(
+                'update shelf set capacity =capacity+1 where shelf_Id=(select shelf_Id from book where book_id=%s)',
+                [id, ])
+            cursor.execute('update book set borrow_count =borrow_count+1 where book_id=%s', id)
+            start_date = date.today()
+            end_date = start_date + timedelta(15)
+            cursor.execute('insert into borrow values (%s,%s,%s,%s)',
+                           (v, id, start_date, end_date))
+            mysql.connection.commit()
+            cursor.close()
+            return redirect(url_for('onhold_show'))
         else:
             return redirect(url_for('home'))
     return redirect(url_for('login'))
