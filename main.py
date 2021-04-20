@@ -619,6 +619,52 @@ def shelf():
     else:
         return redirect(url_for('login'))
 
+@app.route('/edit_shelf', methods=['GET', 'POST'])
+def edit_shelf():
+    msg = ''
+    if request.method == 'POST':
+        book_id = request.form['book_id']
+        shelf_Id = request.form['shelf_Id']
+
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('select shelf_Id from book where book_id = %s', (book_id,))
+        a = cursor.fetchone()
+        cursor.execute('select capacity, shelf_status from shelf where shelf_Id = %s', (shelf_Id,))
+        c = cursor.fetchone()
+        cursor.execute('select capacity, shelf_status from shelf where shelf_Id = %s', (a['shelf_Id'],))
+        d = cursor.fetchone()
+
+        if int(shelf_Id) == int(a['shelf_Id']):
+            msg = 'Already in the same shelf.'
+        else:
+            if 1<=int(c['capacity']) and 74>=int(d['capacity']):
+                cursor.execute('update book set shelf_Id=%s where book_id=%s', (shelf_Id, book_id,))
+                cursor.execute('Update shelf set capacity=%s where shelf_Id=%s', (c['capacity'] - 1, shelf_Id,) )
+                cursor.execute('Update shelf set capacity=%s where shelf_Id=%s', (d['capacity'] + 1, a['shelf_Id'],) )
+                if 0==int(c['capacity']):
+                    cursor.execute('update shelf set shelf_status = %s where shelf_Id = %s',
+                                ('no space', shelf_Id,))
+                msg = 'Shelf edited successfully.'
+            else:
+                msg = 'Cannot move the required book.'
+        mysql.connection.commit()
+        cursor.close()
+
+    if 'loggedin' in session:
+            email = session['email1']
+            if email[:3] == 'lib':
+                return render_template('edit_shelf.html', username=session['username'], msg=msg,
+                                           email=session['email1'])
+            else:
+                return redirect(url_for('home'))
+    else:
+        return redirect(url_for('login'))
+
+
+
+
+
+
 @app.route('/book_return/<string:id>', methods=['GET', 'POST'])
 def book_return(id):
     if 'loggedin' in session:
