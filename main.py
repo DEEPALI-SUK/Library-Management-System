@@ -889,4 +889,56 @@ def detail(id):
             return redirect(url_for('home'))
     return redirect(url_for('login'))
 
+
+@app.route("/book_show/")
+def book_show():
+    update_fine()
+    if 'loggedin' in session:
+        email = session['email1']
+        if email[:3] == 'lib':
+            cur = mysql.connection.cursor()
+            cur.execute('select * from book')
+            list = cur.fetchall()
+            print(list)
+            mysql.connection.commit()
+            cur.close()
+            return render_template('book_show.html',list=list, username=session['username'], email=session['email1'])
+        else:
+            return redirect(url_for('home'))
+    return redirect(url_for('login'))
+
+@app.route("/borrow_show/")
+def borrow_show():
+    update_fine()
+    if 'loggedin' in session:
+        email = session['email1']
+        if email[:3] == 'lib':
+            cur = mysql.connection.cursor()
+            cur.execute('select * from borrow')
+            list = cur.fetchall()
+            print(list)
+            mysql.connection.commit()
+            cur.close()
+            return render_template('borrow_show.html',list=list, username=session['username'], email=session['email1'])
+        else:
+            return redirect(url_for('home'))
+    return redirect(url_for('login'))
+
+@app.route("/onhold_show/")
+def onhold_show():
+    update_fine()
+    if 'loggedin' in session:
+        email = session['email1']
+        if email[:3] == 'lib':
+            cur = mysql.connection.cursor()
+            cur.execute('select * from onhold')
+            list = cur.fetchall()
+            print(list)
+            mysql.connection.commit()
+            cur.close()
+            return render_template('onhold_show.html',list=list, username=session['username'], email=session['email1'])
+        else:
+            return redirect(url_for('home'))
+    return redirect(url_for('login'))
+
 app.run(debug=True)
