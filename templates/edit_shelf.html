@@ -64,23 +64,25 @@
                       <a class="dropdown-item" href="{{ url_for('logout') }}"><h5>Logout</h5></a>
                     </div>
                   </li>
+
                   {%else%}
+
                   <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                     <a class="nav-link" href="/login"><h5>Login/SignUp</h5></a>
                   </li>
                   {%endif%}
-
-                  {% if email!='' and email[:3]!='lib'%}
-                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                    <a class="nav-link" href="/books"><h5>Books</h5></a>
-                  </li>
-                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                        <a class="nav-link" href="/user_dashboard"><h5>Dashboard</h5></a>
+                    {% if email!='' and email[:3]=='lib'%}
+                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                        <a class="nav-link" href="/lib_dashboard"><h5>Dashboard</h5></a>
                      </li>
-                    {% else %}
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                     <a class="nav-link" href="/books"><h5>Books</h5></a>
                   </li>
+
+                    {%else%}
+                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                        <a class="nav-link" href="/books"><h5>Books</h5></a>
+                     </li>
                     {%endif%}
 
                 </ul>
@@ -96,65 +98,75 @@
     <br>
     <br>
 
-    <div class = "container" >
-        <h1>Following</h1>
-        {%if list %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                  {% if email!='' and email[:3]!='lib'%}
-                    <thead>
-                    <tr>
-                      <th scope="col">Name</th>
-                      <th scope="col">View Details</th>
-                    </tr>
-                  </thead>
-                    <tbody>
-                  {% for i in range(0,m) %}
-                        <tr>
-                        <td> {{list[i][0]}} </td>
-                        <td><a href="{{url_for('detail',id=list[i][1])}}" class="btn btn-primary">View Details</a></td>
-                        </tr>
-                  {% endfor %}
-                    </tbody>
-                {%else%}
-                    <p><h2>Not following</h2></p>
-                {%endif%}
-                </table>
-            </div>
-        {%else%}
-            <p><h2>Not following</h2></p>
-        {%endif%}
+
+<div class="container">
+      <div class="row py-5 mt-4 align-items-center">
+
+        <div class="col-md-5 pr-lg-5 mb-5 mb-md-0">
+          <img src="{{url_for('static', filename='./images/bgeditshelf.png')}}" alt="" class="img-fluid mb-3 d-none d-md-block" />
+          <h1>Edit Shelf</h1>
+        </div>
+
+        <div class="col-md-7 col-lg-6 ml-auto">
+            {% if msg %}
+              <div class="alert alert-info alert-dismissible">
+                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                 <strong>{{msg}}</strong>
+              </div>
+            {%endif%}
+          <form action="{{ url_for('edit_shelf') }}" method="post" enctype="multipart/form-data">
+            <div class="row">
+
+              <!-- Book ID -->
+              <div class="input-group col-lg-6 mb-4">
+                <div class="input-group-prepend">
+                  <span
+                    class="input-group-text bg-white px-4 border-md border-right-0"
+                  >
+                    <i class="fa fa-address-book" aria-hidden="true"></i>
+                  </span>
+                </div>
+                <input
+                  id="book_id"
+                  type="text"
+                  name="book_id"
+                  placeholder="Book ID"
+                  class="form-control bg-white border-left-0 border-md"
+                  required
+                />
+              </div>
+
+            <!-- Shelf ID -->
+              <div class="input-group col-lg-6 mb-4">
+                <div class="input-group-prepend">
+                  <span
+                    class="input-group-text bg-white px-4 border-md border-right-0"
+                  >
+                    <i class="fa fa-address-book" aria-hidden="true"></i>
+                  </span>
+                </div>
+                <input
+                  id="shelf_Id"
+                  type="text"
+                  name="shelf_Id"
+                  placeholder="Move to shelf"
+                  class="form-control bg-white border-left-0 border-md"
+                  required
+                />
+              </div>
+            <div class="form-group col-lg-12 mx-auto mb-0">
+                <button class="btn btn-block py-2">
+                  <span class="font-weight-bold">Edit Shelf</span>
+                </button>
+              </div>
+
+         </div>
+          </form>
+        </div>
+      </div>
     </div>
 
-    <div class = "container" >
-        <h1>Followers</h1>
-        {%if l1 %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                  {% if email!='' and email[:3]!='lib'%}
-                    <thead>
-                    <tr>
-                      <th scope="col">Name</th>
-                    </tr>
-                  </thead>
-                    <tbody>
-                  {% for user in l1 %}
-                        <tr>
-                        <td> {{user}} </td>
-                        </tr>
-                  {% endfor %}
-                    </tbody>
-                {%else%}
-                  <p><h2>No followers</h2></p>
-                {%endif%}
-                </table>
-            </div>
-        {%else%}
-            <p><h2>No followers</h2></p>
-        {%endif%}
-    </div>
-
-  <!--footer-->
+    <!--footer-->
     <footer class="footer" id="footer">
     <div class="container">
         <div class="row">

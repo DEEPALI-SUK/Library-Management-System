@@ -111,6 +111,150 @@
             </div>
         </div>
     </div>
+    <br>
+    <br>
+    <br>
+
+    <!-- search -->
+    <div class = "container">
+    <div class="col-md-7 offset-2 col-lg-8 ">
+        <form action="/" method="post">
+            <div class="row">
+
+            <!-- Book Name-->
+                <div class="input-group col-lg-6 mb-4">
+                <div class="input-group-prepend">
+                  <span
+                    class="input-group-text bg-white px-4 border-md border-right-0"
+                  >
+                    <i class="fa fa-address-book" aria-hidden="true"></i>
+                  </span>
+                </div>
+                <input
+                  id="title"
+                  type="text"
+                  name="title"
+                  placeholder="Title"
+                  class="form-control bg-white border-left-0 border-md"
+                />
+              </div>
+
+                <!-- Author -->
+
+              <div class="input-group col-lg-6 mb-4">
+                <div class="input-group-prepend">
+                  <span
+                    class="input-group-text bg-white px-4 border-md border-right-0"
+                  >
+                    <i class="fa fa-address-book" aria-hidden="true"></i>
+                  </span>
+                </div>
+                <input
+                  id="author"
+                  type="text"
+                  name="author"
+                  placeholder="Author"
+                  class="form-control bg-white border-left-0 border-md"
+                />
+              </div>
+
+                  <!-- Category -->
+              <div class="input-group col-lg-12 mb-4">
+                <div class="input-group-prepend">
+                  <span
+                    class="input-group-text bg-white px-4 border-md border-right-0"
+                  >
+                    <i class="fa fa-address-book" aria-hidden="true"></i>
+                  </span>
+                </div>
+                <input
+                  id="category"
+                  type="text"
+                  name="category"
+                  placeholder="Category"
+                  class="form-control bg-white border-left-0 border-md"
+                />
+              </div>
+
+              <!-- Isbn Number -->
+              <div class="input-group col-lg-12 mb-4">
+                <div class="input-group-prepend">
+                  <span
+                    class="input-group-text bg-white px-4 border-md border-right-0"
+                  >
+                    <i class="fa fa-list-ol" aria-hidden="true"></i>
+                  </span>
+                </div>
+
+                <input
+                  id="isbn"
+                  type="number"
+                  name="isbn"
+                  placeholder="ISBN"
+                  class="form-control bg-white border-md border-left-0 pl-3"
+                />
+              </div>
+
+
+              <!-- Submit Button -->
+              <div class="form-group col-lg-12 mx-auto mb-0">
+                <button type="submit" class="btn btn-primary btn-block py-2">
+                  <span class="font-weight-bold">Search</span>
+                </button>
+              </div>
+            </div>
+        </form>
+        </div>
+     </div>
+<br>
+<br>
+
+    <div class="container-fluid" id="s">
+    <div class="slider owl-carousel">
+    {% if detail !="No records found"%}
+        <h4>
+            <strong>{{msg}}</strong>
+        </h4>
+
+        {% for u in detail %}
+                <div class="card">
+                <div class="img">
+                <img src="{{url_for('static', filename='./Uploads/'+u.image)}}" alt=""></div>
+                <div class="content">
+                <div class="title">
+                {{u['title']}}</div>
+                <div class="sub-title">
+                By: {{u['author']}}</div>
+
+                <p>Category: {{u['category']}}</p>
+                <p>Publication Year: {{u['year_of_publication']}}</p>
+                <p>ISBN: {{ u['ISBN'] }}</p>
+                    {% if email!='' and email[:3]!='lib'%}
+                <div class="btn">
+                {% if u['borrow_count']==u['count'] %}
+                            <button>On Hold</button>
+                {% else %}
+                            <a href="{{url_for('borrow_book',id=u['ISBN'])}}"><button>Borrow</button></a>
+                {%endif%}
+                </div>
+                    {%endif%}
+                </div>
+                </div>
+
+        {%endfor%}
+        {% else %}
+        <h4><strong>{{detail}}</strong></h4>
+        {% endif %}
+        </div>
+    </div>
+
+
+
+
+
+
+
+
     <!--footer-->
     <footer class="footer" id="footer">
     <div class="container">

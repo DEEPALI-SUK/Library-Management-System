@@ -70,18 +70,18 @@
                   </li>
                   {%endif%}
 
-                  {% if email!='' and email[:3]!='lib'%}
+                  {% if email!='' and email[:3]=='lib'%}
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                    <a class="nav-link" href="/books"><h5>Books</h5></a>
-                  </li>
-                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
-                        <a class="nav-link" href="/user_dashboard"><h5>Dashboard</h5></a>
+                        <a class="nav-link" href="/lib_dashboard"><h5>Dashboard</h5></a>
                      </li>
-                    {% else %}
                     <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
                     <a class="nav-link" href="/books"><h5>Books</h5></a>
-                  </li>
-                    {%endif%}
+                  {%else%}
+                    </li>
+                    <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                    <a class="nav-link" href="/books"><h5>Books</h5></a>
+                    </li>
+                  {%endif%}
 
                 </ul>
               </div>
@@ -97,61 +97,45 @@
     <br>
 
     <div class = "container" >
-        <h1>Following</h1>
-        {%if list %}
-            <div class="table-responsive">
+         <div class="table-responsive">
                 <table class="table table-hover">
-                  {% if email!='' and email[:3]!='lib'%}
+                  {% if email!='' and email[:3]=='lib'%}
                     <thead>
                     <tr>
-                      <th scope="col">Name</th>
-                      <th scope="col">View Details</th>
+                      <th scope="col">book_id</th>
+                      <th scope="col">ISBN</th>
+                      <th scope="col">title</th>
+                      <th scope="col">author</th>
+                      <th scope="col">Year of publication</th>
+                      <th scope="col">shelf_Id</th>
+                      <th scope="col">count</th>
+                      <th scope="col">Borrow Count</th>
+                      <th scope="col">Category</th>
+                      <th scope="col">Book Shelf Status</th>
                     </tr>
                   </thead>
-                    <tbody>
-                  {% for i in range(0,m) %}
-                        <tr>
-                        <td> {{list[i][0]}} </td>
-                        <td><a href="{{url_for('detail',id=list[i][1])}}" class="btn btn-primary">View Details</a></td>
-                        </tr>
-                  {% endfor %}
-                    </tbody>
-                {%else%}
-                    <p><h2>Not following</h2></p>
-                {%endif%}
-                </table>
-            </div>
-        {%else%}
-            <p><h2>Not following</h2></p>
-        {%endif%}
-    </div>
+                  <tbody>
+                  {% for i in list %}
+                  <tr>
+                  <td> {{i[0]}} </td>
+                  <td> {{i[1]}} </td>
+                  <td> {{i[2]}} </td>
+                      <td> {{i[3]}} </td>
+                      <td> {{i[4]}} </td>
+                      <td> {{i[5]}} </td>
+                      <td> {{i[6]}} </td>
+                      <td> {{i[7]}} </td>
+                      <td> {{i[8]}} </td>
+                      <td> {{i[9]}} </td>
+                  </tr>
 
-    <div class = "container" >
-        <h1>Followers</h1>
-        {%if l1 %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                  {% if email!='' and email[:3]!='lib'%}
-                    <thead>
-                    <tr>
-                      <th scope="col">Name</th>
-                    </tr>
-                  </thead>
-                    <tbody>
-                  {% for user in l1 %}
-                        <tr>
-                        <td> {{user}} </td>
-                        </tr>
                   {% endfor %}
-                    </tbody>
-                {%else%}
-                  <p><h2>No followers</h2></p>
+
+                  </tbody>
+
                 {%endif%}
                 </table>
             </div>
-        {%else%}
-            <p><h2>No followers</h2></p>
-        {%endif%}
     </div>
 
   <!--footer-->

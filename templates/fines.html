@@ -97,62 +97,44 @@
     <br>
 
     <div class = "container" >
-        <h1>Following</h1>
+        <h1>Unapaid Fines : {{sum}}</h1>
         {%if list %}
             <div class="table-responsive">
                 <table class="table table-hover">
-                  {% if email!='' and email[:3]!='lib'%}
                     <thead>
                     <tr>
-                      <th scope="col">Name</th>
-                      <th scope="col">View Details</th>
+                      <th scope="col">Image</th>
+                      <th scope="col">ISBN</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Author</th>
+                      <th scope="col">Year Of Publication</th>
+                      <th scope="col">Start Date</th>
+                      <th scope="col">Due Date</th>
+                      <th scope="col">Unpaid Fine</th>
                     </tr>
                   </thead>
                     <tbody>
-                  {% for i in range(0,m) %}
+                  {% for i in range (0,m) %}
                         <tr>
-                        <td> {{list[i][0]}} </td>
-                        <td><a href="{{url_for('detail',id=list[i][1])}}" class="btn btn-primary">View Details</a></td>
+                            <td> <img src="{{url_for('static', filename='./Uploads/'+list[i][1])}}" style="height:55px; width:55px" alt=""> </td>
+                            <td> {{list[i][2]}} </td>
+                            <td> {{list[i][3]}} </td>
+                            <td> {{list[i][4]}} </td>
+                            <td> {{list[i][5]}} </td>
+                            <td> {{list[i][6]}} </td>
+                            <td> {{list[i][7]}} </td>
+                            <td> {{l[i]}} </td>
                         </tr>
                   {% endfor %}
                     </tbody>
-                {%else%}
-                    <p><h2>Not following</h2></p>
-                {%endif%}
                 </table>
             </div>
         {%else%}
-            <p><h2>Not following</h2></p>
+            <p><h2>No Books Borrowed Yet</h2></p>
         {%endif%}
     </div>
 
-    <div class = "container" >
-        <h1>Followers</h1>
-        {%if l1 %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                  {% if email!='' and email[:3]!='lib'%}
-                    <thead>
-                    <tr>
-                      <th scope="col">Name</th>
-                    </tr>
-                  </thead>
-                    <tbody>
-                  {% for user in l1 %}
-                        <tr>
-                        <td> {{user}} </td>
-                        </tr>
-                  {% endfor %}
-                    </tbody>
-                {%else%}
-                  <p><h2>No followers</h2></p>
-                {%endif%}
-                </table>
-            </div>
-        {%else%}
-            <p><h2>No followers</h2></p>
-        {%endif%}
-    </div>
+
 
   <!--footer-->
     <footer class="footer" id="footer">
@@ -227,3 +209,4 @@
     ></script>
   </body>
 </html>
+
