@@ -106,16 +106,18 @@
                       <th scope="col">book_id</th>
                       <th scope="col">hold_date</th>
                       <th scope="col">hold_time</th>
+                        <th scope="col">Days</th>
                         <th scope="col">Remove hold</th>
                     </tr>
                   </thead>
                   <tbody>
-                  {% for i in list %}
+                  {% for i in range(m) %}
                   <tr>
-                  <td> {{i[0]}} </td>
-                  <td> {{i[1]}} </td>
-                  <td> {{i[2]}} </td>
-                      <td> {{i[3]}} </td>
+                  <td> {{list[i][0]}} </td>
+                  <td> {{list[i][1]}} </td>
+                  <td> {{list[i][2]}} </td>
+                      <td> {{list[i][3]}} </td>
+                      <td> {{list1[i]}} </td>
                       <td> <a href="{{url_for('remove_onhold',id=i[1])}}" class="btn btn-primary">Remove onhold</a>  </td>
                   </tr>
 

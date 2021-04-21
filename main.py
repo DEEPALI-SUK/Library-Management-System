@@ -349,7 +349,7 @@ def lib_dashboard():
     update_fine()
     if 'loggedin' in session:
 
-        return render_template('lib_dashboard.html', username='librarian', email=session['email1'])
+        return render_template('lib_dashboard.html', username=session['username'], email=session['email1'])
     return redirect(url_for('login'))
 
 @app.route("/user_dashboard/")
@@ -369,7 +369,7 @@ def remove_book():
         book_id = request.form['book_id']
         isbn = request.form['isbn']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('select shelf_Id,count from book where book_id = %s', (book_id,))
+        cursor.execute('select shelf_Id,count from book where book_id = %s', ([book_id]))
         a = cursor.fetchone()
         cursor.execute('select capacity from shelf where shelf_Id = %s', (a['shelf_Id'],))
         c = cursor.fetchone()
@@ -377,9 +377,9 @@ def remove_book():
             if int(a['count'])-1==0:
                 cursor.execute('update shelf set shelf_status = %s where shelf_Id = %s',
                                     ('available', a['shelf_Id'],))
-            cursor.execute('delete from book where book_id = %s', (book_id), )
+            cursor.execute('delete from book where book_id = %s', ([book_id]), )
             cursor.execute('update shelf set capacity = %s where shelf_Id = %s', (int(c['capacity'])+1,a['shelf_Id'], ))
-            cursor.execute('update book set count = %s where ISBN = %s', (int(a['count']) - 1,isbn, ))
+            cursor.execute('update book set count = %s where ISBN = %s', (int(a['count']) - 1,[isbn], ))
             msg= 'Book removed successfully.'
         else:
             msg = 'Cannot remove books.'
@@ -453,14 +453,13 @@ def add_book():
                                 (isbn, title, author, year, s1['shelf_Id'], p,0,category,'on shelf',f_name))
                     cursor1.execute('update shelf set capacity = %s where shelf_Id = %s', (s1['capacity']-1,s1['shelf_Id'],))
                     cursor1.execute('update book set count = %s where ISBN = %s',
-                                    (p+1, isbn,))
+                                    (p+1, [isbn],))
                     if p+1==75:
                         cursor1.execute('update shelf set shelf_status = %s where shelf_Id = %s',
                                     ('no space', s1['shelf_Id'],))
                     msg = 'Book added successfully'
             else:
                     msg = 'Cannot add books overflow.'
-            print('hiiiiiii')
             mysql.connection.commit()
             cursor1.close()
         else:
@@ -546,11 +545,11 @@ def borrow_book(id):
                 else:
                     start_date = date.today()
                     end_date = start_date + timedelta(15)
-                    cursor.execute('insert into borrow values (%s,%s,%s,%s)',(session['id'],id,start_date,end_date))
-                    cursor.execute('insert into book_status values (%s,%s,%s)',(session['id'],id,'borrowed'))
-                    cursor.execute('update book set borrow_count =borrow_count+1 where book_id=%s',id)
-                    cursor.execute('update book set book_shelf_status="not on shelf" where book_id=%s', id)
-                    cursor.execute('update shelf set capacity =capacity+1 where shelf_Id=(select shelf_Id from book where book_id=%s)', id)
+                    cursor.execute('insert into borrow values (%s,%s,%s,%s)',(session['id'],[id],start_date,end_date))
+                    cursor.execute('insert into book_status values (%s,%s,%s)',(session['id'],[id],'borrowed'))
+                    cursor.execute('update book set borrow_count =borrow_count+1 where book_id=%s',[id])
+                    cursor.execute('update book set book_shelf_status="not on shelf" where book_id=%s', [id])
+                    cursor.execute('update shelf set capacity =capacity+1 where shelf_Id=(select shelf_Id from book where book_id=%s)', [id])
                     msg='Book got issued succesfully! :)'
             else:
              cursor.execute('select * from borrow where M_Id=%s and book_id=%s', ([session['id'], ], [id, ]))
@@ -562,12 +561,12 @@ def borrow_book(id):
              else:
                  start_date = date.today()
                  end_date = start_date + timedelta(15)
-                 cursor.execute('insert into borrow values (%s,%s,%s,%s)', (session['id'], id, start_date, end_date))
-                 cursor.execute('insert into book_status values (%s,%s,%s)', (session['id'], id, 'borrowed'))
-                 cursor.execute('update book set borrow_count =borrow_count+1 where book_id=%s', id)
-                 cursor.execute('update book set book_shelf_status="not on shelf" where book_id=%s', id)
+                 cursor.execute('insert into borrow values (%s,%s,%s,%s)', ([session['id']], [id], start_date, end_date))
+                 cursor.execute('insert into book_status values (%s,%s,%s)', ([session['id']], [id], 'borrowed'))
+                 cursor.execute('update book set borrow_count =borrow_count+1 where book_id=%s', [id])
+                 cursor.execute('update book set book_shelf_status="not on shelf" where book_id=%s', [id])
                  cursor.execute(
-                     'update shelf set capacity =capacity+1 where shelf_Id=(select shelf_Id from book where book_id=%s)',id)
+                     'update shelf set capacity =capacity+1 where shelf_Id=(select shelf_Id from book where book_id=%s)',[id])
                  msg = 'Book got issued succesfully! :)'
         cursor.execute('select * from book ')
         details = cursor.fetchall()
@@ -588,9 +587,6 @@ def on_hold(id):
         email=session['email1']
         if(email[:3]!='lib'):
             if (email[:7]!='faculty'):
-              if(c['count(*)']>=10):
-                msg='Oops!! you have already put 10 books on hold. You cannot put more than 10 books on hold.'
-              else:
                 cursor.execute('select * from onhold where M_Id=%s and book_id=%s',([session['id'], ],[id, ]))
                 flag=cursor.fetchone()
                 cursor.execute('select * from borrow where M_Id=%s and book_id=%s', ([session['id'], ], [id, ]))
@@ -602,9 +598,9 @@ def on_hold(id):
                 else:
                     hold_date = date.today()
                     hold_time = datetime.now()
-                    cursor.execute('insert into onhold values (%s,%s,%s,%s)',(session['id'],id,hold_date,hold_time))
-                    cursor.execute('insert into book_status values (%s,%s,%s)',(session['id'],id,'onhold'))
-                    cursor.execute('update book set book_shelf_status="not on shelf" where book_id=%s', id)
+                    cursor.execute('insert into onhold values (%s,%s,%s,%s)',([session['id']],[id],hold_date,hold_time))
+                    cursor.execute('insert into book_status values (%s,%s,%s)',([session['id']],[id],'onhold'))
+                    cursor.execute('update book set book_shelf_status="not on shelf" where book_id=%s',[id])
                     msg='Book put on hold succesfully! :)'
             else:
              cursor.execute('select * from onhold where M_Id=%s and book_id=%s', ([session['id'], ], [id, ]))
@@ -618,8 +614,8 @@ def on_hold(id):
              else:
                  hold_date = date.today()
                  hold_time = datetime.now()
-                 cursor.execute('insert into onhold values (%s,%s,%s,%s)', (session['id'], id, hold_date, hold_time))
-                 cursor.execute('insert into book_status values (%s,%s,%s)', (session['id'], id, 'onhold'))
+                 cursor.execute('insert into onhold values (%s,%s,%s,%s)', ([session['id']], [id], hold_date, hold_time))
+                 cursor.execute('insert into book_status values (%s,%s,%s)', ([session['id']], [id], 'onhold'))
                  cursor.execute('update book set book_shelf_status="not on shelf" where book_id=%s', [id, ])
                  msg = 'Book put on hold succesfully! :)'
         cursor.execute('select * from book ')
@@ -685,9 +681,9 @@ def edit_shelf():
         shelf_Id = request.form['shelf_Id']
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('select shelf_Id from book where book_id = %s', (book_id,))
+        cursor.execute('select shelf_Id from book where book_id = %s', [book_id,])
         a = cursor.fetchone()
-        cursor.execute('select capacity, shelf_status from shelf where shelf_Id = %s', (shelf_Id,))
+        cursor.execute('select capacity, shelf_status from shelf where shelf_Id = %s', [shelf_Id,])
         c = cursor.fetchone()
         cursor.execute('select capacity, shelf_status from shelf where shelf_Id = %s', (a['shelf_Id'],))
         d = cursor.fetchone()
@@ -696,12 +692,12 @@ def edit_shelf():
             msg = 'Already in the same shelf.'
         else:
             if 1<=int(c['capacity']) and 74>=int(d['capacity']):
-                cursor.execute('update book set shelf_Id=%s where book_id=%s', (shelf_Id, book_id,))
-                cursor.execute('Update shelf set capacity=%s where shelf_Id=%s', (c['capacity'] - 1, shelf_Id,) )
+                cursor.execute('update book set shelf_Id=%s where book_id=%s', ([shelf_Id], [book_id]))
+                cursor.execute('Update shelf set capacity=%s where shelf_Id=%s', (c['capacity'] - 1, [shelf_Id],) )
                 cursor.execute('Update shelf set capacity=%s where shelf_Id=%s', (d['capacity'] + 1, a['shelf_Id'],) )
                 if 0==int(c['capacity']):
                     cursor.execute('update shelf set shelf_status = %s where shelf_Id = %s',
-                                ('no space', shelf_Id,))
+                                ('no space', [shelf_Id],))
                 msg = 'Shelf edited successfully.'
             else:
                 msg = 'Cannot move the required book.'
@@ -725,7 +721,7 @@ def book_return(id):
         email = session['email1']
         if email[:3] != 'lib':
             cur = mysql.connection.cursor()
-            cur.execute('insert into approve_return values (%s,%s)',(session['id'],id))
+            cur.execute('insert into approve_return values (%s,%s)',([session['id']],[id]))
             mysql.connection.commit()
             cur.close()
         return redirect(url_for('personal_bookshelf'))
@@ -770,16 +766,16 @@ def approve_return(id):
 
 
             if(c['count(*)']==0):
-                cursor.execute('delete from book_status where book_id=%s and M_Id=%s', (id,v))
-                cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id,v))
+                cursor.execute('delete from book_status where book_id=%s and M_Id=%s', ([id],v))
+                cursor.execute('delete from borrow where book_id=%s and M_Id=%s', ([id],v))
                 cursor.execute('select count(*) from borrow where book_id=%s', [id, ])
                 h=cursor.fetchone()
                 if(h['count(*)']==0):
-                   cursor.execute('update book set book_shelf_status="on shelf" where book_id=%s', id)
+                   cursor.execute('update book set book_shelf_status="on shelf" where book_id=%s', [id])
                    cursor.execute(
                        'update shelf set capacity =capacity-1 where shelf_Id=(select shelf_Id from book where book_id=%s)',
                        [id, ])
-                cursor.execute('update book set borrow_count =borrow_count-1 where book_id=%s',id)
+                cursor.execute('update book set borrow_count =borrow_count-1 where book_id=%s',[id])
             else:
                 cursor.execute('select M_Id, hold_date,hold_time from onhold where book_id=%s and M_Id in (select M_Id from lib_member where unpaid_fines<1000) order by hold_date,hold_time',[id, ])
                 x=cursor.fetchall()
@@ -803,38 +799,38 @@ def approve_return(id):
                             break
                    if(r==-1):
                        cursor.execute('delete from book_status where book_id=%s and M_Id=%s',
-                                      (id,session['id']))
-                       cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id,v))
-                       cursor.execute('update book set borrow_count =borrow_count-1 where book_id=%s', id)
+                                      ([id],[session['id']]))
+                       cursor.execute('delete from borrow where book_id=%s and M_Id=%s', ([id],v))
+                       cursor.execute('update book set borrow_count =borrow_count-1 where book_id=%s', [id])
                        cursor.execute('select count(*) from borrow where book_id=%s', [id, ])
                        g = cursor.fetchone()
                        if (g['count(*)']==0):
-                           cursor.execute('update book set book_shelf_status="on shelf" where book_id=%s',id)
+                           cursor.execute('update book set book_shelf_status="on shelf" where book_id=%s',[id])
                            cursor.execute(
-                               'update shelf set capacity =capacity-1 where shelf_Id=(select shelf_Id from book where book_id=%s)',id)
+                               'update shelf set capacity =capacity-1 where shelf_Id=(select shelf_Id from book where book_id=%s)',[id])
 
                    else:
-                       cursor.execute('delete from onhold where book_id=%s and M_Id=%s', (id,r))
+                       cursor.execute('delete from onhold where book_id=%s and M_Id=%s', ([id],r))
                        cursor.execute('delete from book_status where book_id=%s and M_Id=%s',
-                                      (id, v))
+                                      ([id], v))
                        cursor.execute('update book_status set status1="borrow" where book_id=%s and M_Id=%s',
-                                      (id, r))
+                                      ([id], r))
                        start_date = date.today()
                        end_date = start_date + timedelta(15)
-                       cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id, v))
+                       cursor.execute('delete from borrow where book_id=%s and M_Id=%s', ([id], v))
                        cursor.execute('insert into borrow values (%s,%s,%s,%s)',
-                                      (r, id, start_date, end_date))
+                                      (r, [id], start_date, end_date))
                 else:
-                    cursor.execute('delete from book_status where book_id=%s and M_Id=%s', (id, v))
-                    cursor.execute('delete from borrow where book_id=%s and M_Id=%s', (id,v))
-                    cursor.execute('update book set borrow_count =borrow_count-1 where book_id=%s', id)
+                    cursor.execute('delete from book_status where book_id=%s and M_Id=%s', ([id], v))
+                    cursor.execute('delete from borrow where book_id=%s and M_Id=%s', ([id],v))
+                    cursor.execute('update book set borrow_count =borrow_count-1 where book_id=%s', [id])
                     cursor.execute('select count(*) from borrow where book_id=%s', [id, ])
                     g = cursor.fetchone()
                     print(g)
                     if (g['count(*)']==0):
-                        cursor.execute('update book set book_shelf_status="on shelf" where book_id=%s', id)
+                        cursor.execute('update book set book_shelf_status="on shelf" where book_id=%s', [id])
                         cursor.execute(
-                            'update shelf set capacity =capacity-1 where shelf_Id=(select shelf_Id from book where book_id=%s)',id)
+                            'update shelf set capacity =capacity-1 where shelf_Id=(select shelf_Id from book where book_id=%s)',[id])
             delta = (date.today() - due_date['due_date']).days
 
             if (delta - 30) > 0:
@@ -966,9 +962,14 @@ def onhold_show():
             cur = mysql.connection.cursor()
             cur.execute('select * from onhold')
             list = cur.fetchall()
+            list1=[]
+            m=0
+            for i in list:
+                list1.append((date.today()-i[2]).days)
+                m+=1
             mysql.connection.commit()
             cur.close()
-            return render_template('onhold_show.html', username=session['username'], list=list,
+            return render_template('onhold_show.html', username=session['username'], list=list,list1=list1,m=m,
                                    email=session['email1'])
         else:
             return redirect(url_for('home'))
@@ -984,18 +985,18 @@ def remove_onhold(id):
             cursor.execute('select M_Id from onhold where book_id=%s', [id, ])
             v = cursor.fetchone()
             v = v[0]
-            cursor.execute('delete from onhold where book_id=%s and M_Id=%s', (id, v))
+            cursor.execute('delete from onhold where book_id=%s and M_Id=%s', ([id], v))
             cursor.execute('update book_status set status1="borrowed" where book_id=%s and M_Id=%s',
-                           (id, v))
-            cursor.execute('update book set book_shelf_status="not on shelf" where book_id=%s', id)
+                           ([id], v))
+            cursor.execute('update book set book_shelf_status="not on shelf" where book_id=%s', [id])
             cursor.execute(
                 'update shelf set capacity =capacity+1 where shelf_Id=(select shelf_Id from book where book_id=%s)',
                 [id, ])
-            cursor.execute('update book set borrow_count =borrow_count+1 where book_id=%s', id)
+            cursor.execute('update book set borrow_count =borrow_count+1 where book_id=%s',[id])
             start_date = date.today()
             end_date = start_date + timedelta(15)
             cursor.execute('insert into borrow values (%s,%s,%s,%s)',
-                           (v, id, start_date, end_date))
+                           (v, [id], start_date, end_date))
             mysql.connection.commit()
             cursor.close()
             return redirect(url_for('onhold_show'))
