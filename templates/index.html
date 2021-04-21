@@ -117,12 +117,12 @@
 
     <!-- search -->
     <div class = "container">
-    <div class="col-md-7 offset-2 col-lg-8 ">
+    <div class="col-md-7 col-lg-8 mx-auto">
         <form action="/" method="post">
             <div class="row">
 
             <!-- Book Name-->
-                <div class="input-group col-lg-6 mb-4">
+                <div class="input-group col-lg-12 mb-4">
                 <div class="input-group-prepend">
                   <span
                     class="input-group-text bg-white px-4 border-md border-right-0"
@@ -141,7 +141,7 @@
 
                 <!-- Author -->
 
-              <div class="input-group col-lg-6 mb-4">
+              <div class="input-group col-lg-12 mb-4">
                 <div class="input-group-prepend">
                   <span
                     class="input-group-text bg-white px-4 border-md border-right-0"
@@ -159,7 +159,7 @@
               </div>
 
                   <!-- Category -->
-              <div class="input-group col-lg-12 mb-4">
+              <div class="input-group col-lg-6 mb-4">
                 <div class="input-group-prepend">
                   <span
                     class="input-group-text bg-white px-4 border-md border-right-0"
@@ -177,7 +177,7 @@
               </div>
 
               <!-- Isbn Number -->
-              <div class="input-group col-lg-12 mb-4">
+              <div class="input-group col-lg-6 mb-4">
                 <div class="input-group-prepend">
                   <span
                     class="input-group-text bg-white px-4 border-md border-right-0"
@@ -197,7 +197,7 @@
 
 
               <!-- Submit Button -->
-              <div class="form-group col-lg-12 mx-auto mb-0">
+              <div class="form-group col-lg-8 mx-auto mb-0">
                 <button type="submit" class="btn btn-primary btn-block py-2">
                   <span class="font-weight-bold">Search</span>
                 </button>
@@ -209,47 +209,47 @@
 <br>
 <br>
 
-    <div class="container-fluid" id="s">
-    <div class="slider owl-carousel">
+    <div class = "container" >
     {% if detail !="No records found"%}
-        <h4>
+        <h4 align="center">
             <strong>{{msg}}</strong>
         </h4>
-
-        {% for u in detail %}
-                <div class="card">
-                <div class="img">
-                <img src="{{url_for('static', filename='./Uploads/'+u.image)}}" alt=""></div>
-                <div class="content">
-                <div class="title">
-                {{u['title']}}</div>
-                <div class="sub-title">
-                By: {{u['author']}}</div>
-
-                <p>Category: {{u['category']}}</p>
-                <p>Publication Year: {{u['year_of_publication']}}</p>
-                <p>ISBN: {{ u['ISBN'] }}</p>
-                    {% if email!='' and email[:3]!='lib'%}
-                <div class="btn">
-                {% if u['borrow_count']==u['count'] %}
-                            <button>On Hold</button>
-                {% else %}
-                            <a href="{{url_for('borrow_book',id=u['ISBN'])}}"><button>Borrow</button></a>
-                {%endif%}
-                </div>
-                    {%endif%}
-                </div>
-                </div>
-
-        {%endfor%}
-        {% else %}
-        <h4><strong>{{detail}}</strong></h4>
-        {% endif %}
+        <br>
+        {% if detail %}
+        <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                      <th scope="col">Image</th>
+                      <th scope="col">ISBN</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Author</th>
+                      <th scope="col">Year Of Publication</th>
+                    </tr>
+                  </thead>
+                    <tbody>
+                  {% for u in detail %}
+                        <tr>
+                            <td> <img src="{{url_for('static', filename='./Uploads/'+u['image'])}}" style="height:55px; width:55px" alt=""> </td>
+                            <td> {{u['ISBN']}} </td>
+                            <td> {{u['title']}} </td>
+                            <td> {{u['author']}} </td>
+                            <td> {{u['year_of_publication']}} </td>
+                        </tr>
+                  {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {%endif%}
         </div>
+        {%else%}
+            <h4 align="center">
+                <strong>{{detail}}</strong>
+            </h4>
+        {%endif%}
+
     </div>
-
-
-
+    </div>
 
 
 
@@ -260,25 +260,8 @@
     <div class="container">
         <div class="row">
             <div class="col-md-5">
-                <h5><i class="fa fa-book"></i> LMS</h5>
-                <div class="row">
-                    <div class="col-6">
-                        <ul class="list-unstyled">
-                            <li><a href="">Product</a></li>
-                            <li><a href="">Benefits</a></li>
-                            <li><a href="">Partners</a></li>
-                            <li><a href="">Team</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-6">
-                        <ul class="list-unstyled">
-                            <li><a href="">Documentation</a></li>
-                            <li><a href="">Support</a></li>
-                            <li><a href="">Legal Terms</a></li>
-                            <li><a href="">About</a></li>
-                        </ul>
-                    </div>
-                </div>
+                <h3><i class="fa fa-book"></i> LMS</h3>
+                <br>
                 <ul class="nav">
                     <li class="nav-item"><a href="" class="nav-link pl-0"><i class="fa fa-facebook fa-lg"></i></a></li>
                     <li class="nav-item"><a href="" class="nav-link"><i class="fa fa-twitter fa-lg"></i></a></li>
