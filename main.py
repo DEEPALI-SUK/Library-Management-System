@@ -534,7 +534,7 @@ def borrow_book(id):
         if(email[:3]!='lib'):
             if (email[:7]!='faculty'):
               if(c['count(*)']>=3):
-                msg='Oops!! you have already issued 3 books. You cannot issue more than 10 books.'
+                msg='Oops!! you have already issued 3 books. You cannot issue more than 3 books.'
               elif g['unpaid_fines']>1000:
                   msg = 'Oops!! first pay the unpaid fines :('
               else:
