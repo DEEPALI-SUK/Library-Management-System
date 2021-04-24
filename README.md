@@ -25,44 +25,46 @@ A Library Management System made using the concepts of Database Management Syste
 
 ## Snapshots
 
-![image](https://user-images.githubusercontent.com/64724041/115949724-92fd9580-a4f4-11eb-9b38-61d26702683b.png)
+![image](https://user-images.githubusercontent.com/64724039/115950739-aad81800-a4fa-11eb-9fd5-c86c29b46dc2.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949759-da842180-a4f4-11eb-83ae-02de35b33647.png)
+![image](https://user-images.githubusercontent.com/64724039/115950757-cb07d700-a4fa-11eb-857e-e096117088df.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949769-eec81e80-a4f4-11eb-921b-26f70a516d54.png)
+![image](https://user-images.githubusercontent.com/64724039/115950793-f68ac180-a4fa-11eb-8970-bff9aa6a2da1.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949785-0dc6b080-a4f5-11eb-82a5-44a6226c90df.png)
+![image](https://user-images.githubusercontent.com/64724039/115950805-0d311880-a4fb-11eb-902f-1459d9db91af.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949839-44043000-a4f5-11eb-978c-b9c888c788ae.png)
+![image](https://user-images.githubusercontent.com/64724039/115950822-30f45e80-a4fb-11eb-954c-823df9d9e315.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949852-5c744a80-a4f5-11eb-80e6-6898323cf8b7.png)
+![image](https://user-images.githubusercontent.com/64724039/115950846-54b7a480-a4fb-11eb-8741-60ca886fd3bb.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949862-7150de00-a4f5-11eb-8a9a-864a65a62cd8.png)
+![image](https://user-images.githubusercontent.com/64724039/115950856-68630b00-a4fb-11eb-81f6-9d8a781d910f.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949872-8463ae00-a4f5-11eb-9922-e11cb032b8af.png)
+![image](https://user-images.githubusercontent.com/64724039/115950881-816bbc00-a4fb-11eb-9096-6c10288d22a8.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949893-a3fad680-a4f5-11eb-8137-24fc97d0bb71.png)
+![image](https://user-images.githubusercontent.com/64724039/115950898-921c3200-a4fb-11eb-9b8c-cd361ad7dbff.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949911-bb39c400-a4f5-11eb-95ef-5c703bb61bd4.png)
+![image](https://user-images.githubusercontent.com/64724039/115950912-a3653e80-a4fb-11eb-9e7b-0e82b7785a84.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949924-cab90d00-a4f5-11eb-8aca-2a5a8516b5a9.png)
+![image](https://user-images.githubusercontent.com/64724039/115950931-b415b480-a4fb-11eb-8d41-051ef07b319f.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949933-da385600-a4f5-11eb-8968-10336ba2ede8.png)
+![image](https://user-images.githubusercontent.com/64724039/115950944-c42d9400-a4fb-11eb-9c09-bcef661d42f2.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949944-e9b79f00-a4f5-11eb-8857-f118529d5375.png)
+![image](https://user-images.githubusercontent.com/64724039/115950981-fb03aa00-a4fb-11eb-906d-5171641def0a.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949950-f9cf7e80-a4f5-11eb-8c45-afc0fd5c36d2.png)
+![image](https://user-images.githubusercontent.com/64724039/115951000-11116a80-a4fc-11eb-8f56-1d1a3bb6332e.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949961-0b188b00-a4f6-11eb-9fd6-d92ee56d5c9e.png)
+![image](https://user-images.githubusercontent.com/64724039/115951008-2090b380-a4fc-11eb-857a-91f3b8d891f0.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949983-1f5c8800-a4f6-11eb-842e-aadd14914721.png)
+![image](https://user-images.githubusercontent.com/64724039/115951028-330aed00-a4fc-11eb-907a-0aafc2c92305.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115949994-2edbd100-a4f6-11eb-9fb8-9ffbae12fea1.png)
+![image](https://user-images.githubusercontent.com/64724039/115951048-43bb6300-a4fc-11eb-854f-c8084348f9ab.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115950006-3f8c4700-a4f6-11eb-8880-912f5091fb94.png)
+![image](https://user-images.githubusercontent.com/64724039/115951061-5766c980-a4fc-11eb-972c-fbc82f076782.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115950013-529f1700-a4f6-11eb-9c60-b752537c0b71.png)
+![image](https://user-images.githubusercontent.com/64724039/115951070-677ea900-a4fc-11eb-995a-100d66ac9a43.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115950025-60ed3300-a4f6-11eb-8151-2b2dc7a7637a.png)
+![image](https://user-images.githubusercontent.com/64724039/115951089-79604c00-a4fc-11eb-992f-1af876080b63.png)
 
-![image](https://user-images.githubusercontent.com/64724041/115950032-74000300-a4f6-11eb-888b-86aac8a02d03.png)
+![image](https://user-images.githubusercontent.com/64724039/115951112-91d06680-a4fc-11eb-8a44-4b51d4b73909.png)
+
+![image](https://user-images.githubusercontent.com/64724039/115951120-a14faf80-a4fc-11eb-8afd-a4eb65106000.png)
